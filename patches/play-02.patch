@@ -1,0 +1,191 @@
+--- a/libs/stream/textfilestream.h
++++ b/libs/stream/textfilestream.h
+@@ -51,12 +51,13 @@
+ class TextFileOutputStream : public TextOutputStream
+ {
+ 	FILE* m_file;
++	bool m_writeFailed = false;
+ public:
+ 	TextFileOutputStream( const char* name ){
+ 		m_file = name[0] == '\0' ? 0 : fopen( name, "wt" );
+ 	}
+ 	~TextFileOutputStream(){
+-		if ( !failed() ) {
++		if ( m_file ) {
+ 			fclose( m_file );
+ 		}
+ 	}
+@@ -66,7 +67,16 @@
+ 	}
+ 
+ 	std::size_t write( const char* buffer, std::size_t length ) override {
+-		return fwrite( buffer, 1, length, m_file );
++		const auto written = fwrite( buffer, 1, length, m_file );
++		m_writeFailed |= written != length;
++		return written;
++	}
++	bool close(){
++		if ( !m_file )
++			return false;
++		const bool success = fclose( m_file ) == 0 && !m_writeFailed;
++		m_file = nullptr;
++		return success;
+ 	}
+ };
+ 
+--- a/radiant/referencecache.cpp
++++ b/radiant/referencecache.cpp
+@@ -103,7 +103,8 @@
+ 		globalOutputStream() << "success\n";
+ 		ScopeDisableScreenUpdates disableScreenUpdates( path_get_filename_start( filename ), "Saving Map" );
+ 		format.writeGraph( root, traverse, file );
+-		return true;
++		if ( file.close() )
++			return true;
+ 	}
+ 
+ 	globalErrorStream() << "failure\n";
+--- a/radiant/map.cpp
++++ b/radiant/map.cpp
+@@ -1252,7 +1252,7 @@
+ 
+ 	ScopeTimer timer( "map save" );
+ 	SaveReferences();
+-	return true; // assume success..
++	return References_Saved();
+ }
+ 
+ /*
+--- a/radiant/qe3.h
++++ b/radiant/qe3.h
+@@ -29,7 +29,7 @@
+ //
+ void    Sys_SetTitle( const char *text, bool modified );
+ 
+-void RunBSP( size_t buildIdx );
++void RunBSP( size_t buildIdx, bool play = false );
+ void RunBatch( const std::vector<CopiedString>& commands );
+ 
+ void QE_InitVFS();
+--- a/radiant/qe3.cpp
++++ b/radiant/qe3.cpp
+@@ -232,7 +232,25 @@
+ }
+ 
+ 
+-void RunBSP( size_t buildIdx ){
++void RunBSP( size_t buildIdx, bool play ){
++	if ( play ) {
++		if ( g_region_active ) {
++			QMessageBox::warning( MainFrame_getWindow(), "Play", "Disable region mode before playing the full map." );
++			return;
++		}
++		if ( Map_Unnamed( g_map ) ) {
++			if ( !Map_SaveAs() ) {
++				QMessageBox::warning( MainFrame_getWindow(), "Play", "Save the map successfully before playing." );
++				return;
++			}
++		}
++		else if ( Map_Modified( g_map ) && !Map_Save() ) {
++			QMessageBox::warning( MainFrame_getWindow(), "Play", "Map save failed. Play cancelled." );
++			return;
++		}
++		RunBatch( build_construct_commands( buildIdx ) );
++		return;
++	}
+ 	if( !g_region_active )
+ 		SaveMap();
+ 
+--- a/radiant/build.h
++++ b/radiant/build.h
+@@ -37,3 +37,4 @@
+ extern QMenu* g_bsp_menu;
+ 
+ void Build_runRecentExecutedBuild();
++void Build_runEnginePlay();
+--- a/radiant/build.cpp
++++ b/radiant/build.cpp
+@@ -1199,18 +1199,22 @@
+ #include "gtkutil/menu.h"
+ #include "mainframe.h"
+ #include "preferences.h"
++#include <QMessageBox>
++
++static constexpr auto EnginePlayName = "\xE2\x96\xB6 Play";
+ 
+ class BuildMenuItem
+ {
+ 	/* using build index to pass build reference: it is okay for now, as we rebuild g_BuildMenuItems entirely on any modification
+ 	   using build name before was faulty design, as builds may have equal names */
+ 	const size_t m_buildIdx;
++	const bool m_play;
+ public:
+ 	QAction* m_item{};
+-	BuildMenuItem( size_t buildIdx ) : m_buildIdx( buildIdx ){
++	BuildMenuItem( size_t buildIdx, bool play ) : m_buildIdx( buildIdx ), m_play( play ){
+ 	}
+ 	void run() const {
+-		RunBSP( m_buildIdx );
++		RunBSP( m_buildIdx, m_play );
+ 	}
+ 	typedef ConstMemberCaller<BuildMenuItem, void(), &BuildMenuItem::run> RunCaller;
+ };
+@@ -1225,7 +1229,7 @@
+ 	size_t buildIdx{};
+ 	for ( const auto& [ name, commands ] : g_build_project )
+ 	{
+-		g_BuildMenuItems.push_back( BuildMenuItem( buildIdx++ ) );
++		g_BuildMenuItems.push_back( BuildMenuItem( buildIdx++, string_equal( name.c_str(), EnginePlayName ) ) );
+ 		if ( is_separator( name, commands ) ) {
+ 			g_BuildMenuItems.back().m_item = menu->addSeparator();
+ 		}
+@@ -1246,6 +1250,18 @@
+ }
+ 
+ 
++void Build_runEnginePlay(){
++	size_t index{};
++	for ( const auto& [ name, commands ] : g_build_project ) {
++		if ( string_equal( name.c_str(), EnginePlayName ) ) {
++			RunBSP( index, true );
++			return;
++		}
++		++index;
++	}
++	QMessageBox::warning( MainFrame_getWindow(), "Play", "The Engine Play build command is missing." );
++}
++
+ void Build_refreshMenu( QMenu* menu ){
+ 	for ( const BuildMenuItem& item : g_BuildMenuItems )
+ 	{
+@@ -1310,5 +1326,5 @@
+ 
+ void Build_runRecentExecutedBuild(){
+ 	if( !g_build_project.empty() )
+-		RunBSP( Project_find( g_build_project, g_lastExecutedBuild ) );
+-}
++		RunBSP( Project_find( g_build_project, g_lastExecutedBuild ), g_lastExecutedBuild != g_build_project.end() && string_equal( g_lastExecutedBuild->first.c_str(), EnginePlayName ) );
++}
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -49,6 +49,7 @@
+ #include <QMenuBar>
+ #include <QApplication>
+ #include <QToolBar>
++#include <QStyle>
+ #include <QStatusBar>
+ #include <QBoxLayout>
+ #include <QCloseEvent>
+@@ -1387,6 +1388,12 @@
+ void create_main_toolbar( QToolBar *toolbar,  MainFrame::EViewStyle style ){
+ 	QSvgGenerator dummy; // reference symbol, so that Qt5Svg.dll required dependency is explicit, also install-dlls-msys2-mingw.sh will find it
+ 
++	if ( string_equal( g_pGameDescription->mGameFile, "engine.game" ) ) {
++		auto* play = toolbar->addAction( toolbar->style()->standardIcon( QStyle::SP_MediaPlay ), "Play" );
++		play->setToolTip( QString::fromUtf8( "Play \xE2\x80\x94 uruchom aktualn\xC4\x85 map\xC4\x99 w Engine" ) );
++		QObject::connect( play, &QAction::triggered, toolbar, &Build_runEnginePlay );
++	}
++
+  	File_constructToolbar( toolbar );
+ 	toolbar_append_separator( toolbar );
+ 
