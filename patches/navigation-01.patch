@@ -1,0 +1,740 @@
+--- a/radiant/camwindow.cpp
++++ b/radiant/camwindow.cpp
+@@ -61,6 +61,7 @@
+ #include <QOpenGLWidget>
+ 
+ #include <QApplication>
++#include <QKeyEvent>
+ 
+ // https://stackoverflow.com/questions/42566421/how-to-queue-lambda-function-into-qts-event-loop/42566867#42566867
+ template <typename Fun> void postCall( QObject * obj, Fun && fun ) {
+@@ -151,13 +152,10 @@
+ 	int m_nMoveSpeed = 500;
+ 	int m_time_toMaxSpeed = 200;
+ 	int m_nScrollMoveSpeed = 100;
+-	bool m_bZoomToPointer = true;
+-	float m_strafeSpeed = 1;
+ 	float m_angleSpeed = 3;
+ 	bool m_bCamInverseMouse = false;
+ 	bool m_bCamDiscrete = true;
+ 	bool m_bCubicClipping = false;
+-	int m_strafeMode = 3;
+ 	bool m_bFaceWire = true;
+ 	bool m_bFaceFill = true;
+ 	int m_MSAA = 8;
+@@ -219,24 +217,16 @@
+ 	Matrix4 projection;
+ 	Matrix4 modelview;
+ 
+-	bool m_strafe; // true when in strafemode toggled by the ctrl-key
+-	bool m_strafe_forward; // true when in strafemode by ctrl-key and shift is pressed for forward strafing
+-	bool m_strafe_forward_invert; //silly option to invert forward strafing to support old fegs
+-	bool m_orbit = false;
+-	Vector3 m_orbit_center;
+-	Vector3 m_orbit_initial_pos;
+-	int m_orbit_offset = 0;
+ 	int m_focus_offset = 0;
+ 
+-	unsigned int movementflags; // movement flags
++	unsigned int movementflags; // shortcut movement flags
++	unsigned int navigationflags{}; // viewport navigation keys
+ 	Timer m_keycontrol_timer;
+ 	float m_keymove_speed_current;
+ 
+ 
+ 	static float fieldOfView;
+ 	static const float near_z;
+-
+-	DeferredMotionDelta2 m_mouseMove;
+ 
+ 	View* m_view;
+ 	Callback<void()> m_update;
+@@ -254,7 +244,6 @@
+ 		color( 0, 0, 0 ),
+ 		movementflags( 0 ),
+ 		m_keymove_speed_current( 0 ),
+-		m_mouseMove( [this]( int x, int y, const QMouseEvent& event ){ Camera_mouseMove( *this, x, y, event ); } ),
+ 		m_view( view ),
+ 		m_update( update ),
+ 		m_idleDraw( update ),
+@@ -365,61 +354,10 @@
+ 
+ 
+ void Camera_FreeMove( camera_t& camera, int dx, int dy ){
+-	// free strafe mode, toggled by the ctrl key with optional shift for forward movement
+-	if ( camera.m_strafe ) {
+-		const float speed = g_camwindow_globals_private.m_strafeSpeed;
+-		camera.origin -= camera.vright * speed * dx;
+-		if ( camera.m_strafe_forward )
+-			camera.origin += camera.vpn * speed * dy * ( camera.m_strafe_forward_invert ? 1 : -1 );
+-		else
+-			camera.origin += camera.vup * speed * dy;
+-	}
+-	else // free rotation
+-	{
+-		const float dtime = 0.0333333f;
+-		Vector3 angles0( camera.angles );
+-
+-		if ( g_camwindow_globals_private.m_bCamInverseMouse ) {
+-			camera.angles[CAMERA_PITCH] -= dy * dtime * g_camwindow_globals_private.m_angleSpeed;
+-		}
+-		else{
+-			camera.angles[CAMERA_PITCH] += dy * dtime * g_camwindow_globals_private.m_angleSpeed;
+-		}
+-
+-		camera.angles[CAMERA_YAW] += dx * dtime * g_camwindow_globals_private.m_angleSpeed;
+-
+-		camera.angles[CAMERA_PITCH] = std::clamp( camera.angles[CAMERA_PITCH], -90.f, 90.f );
+-
+-		if ( camera.angles[CAMERA_YAW] >= 360 ) {
+-			camera.angles[CAMERA_YAW] -= 360;
+-		}
+-		else if ( camera.angles[CAMERA_YAW] <= 0 ) {
+-			camera.angles[CAMERA_YAW] += 360;
+-		}
+-
+-		if( camera.m_orbit ){
+-#if 0
+-			const Vector3 radangles( euler_degrees_to_radians( camera.angles ) );
+-			const Vector3 viewdir( cos( radangles[1] ) * cos( radangles[0] ),
+-			                       sin( radangles[1] ) * cos( radangles[0] ),
+-			                       sin( radangles[0] )
+-			                     );
+-			const float len = vector3_length( camera.origin - camera.m_orbit_center );
+-			camera.origin = camera.m_orbit_center - viewdir * len;
+-#else
+-			Matrix4 rot0 = matrix4_rotation_for_euler_xyz_degrees( Vector3( 0, -angles0[CAMERA_PITCH], angles0[CAMERA_YAW] ) );
+-			matrix4_affine_invert( rot0 );
+-			Matrix4 rot1 = matrix4_rotation_for_euler_xyz_degrees( Vector3( 0, -camera.angles[CAMERA_PITCH], camera.angles[CAMERA_YAW] ) );
+-			matrix4_multiply_by_matrix4( rot1, rot0 );
+-
+-			Matrix4 mat = matrix4_translation_for_vec3( camera.m_orbit_center );
+-			matrix4_multiply_by_matrix4( mat, rot1 );
+-			matrix4_translate_by_vec3( mat, -camera.m_orbit_center );
+-
+-			camera.origin = matrix4_transformed_point( mat, camera.origin );
+-#endif
+-		}
+-	}
++	const float sensitivity = 0.0333333f * g_camwindow_globals_private.m_angleSpeed;
++	const float pitchSign = g_camwindow_globals_private.m_bCamInverseMouse ? -1.f : 1.f;
++	camera.angles[CAMERA_PITCH] = std::clamp( camera.angles[CAMERA_PITCH] + pitchSign * dy * sensitivity, -90.f, 90.f );
++	camera.angles[CAMERA_YAW] = std::fmod( camera.angles[CAMERA_YAW] + dx * sensitivity, 360.f );
+ 
+ 	Camera_updateModelview( camera );
+ 	Camera_Freemove_updateAxes( camera );
+@@ -429,6 +367,7 @@
+ void Camera_mouseMove( camera_t& camera, int x, int y, const QMouseEvent& event ){
+ 	//globalOutputStream() << "mousemove... ";
+ 	Camera_FreeMove( camera, -x, -y );
++	camera.m_update();
+ 	camera.m_update_motion_freemove( MotionDeltaValues( x, y, event ) );
+ 	CameraMovedNotify();
+ }
+@@ -447,21 +386,28 @@
+ const unsigned int MOVE_FOCUS = 1 << 10;
+ const unsigned int MOVE_ALL = MOVE_FORWARD | MOVE_BACK | MOVE_ROTRIGHT | MOVE_ROTLEFT | MOVE_STRAFERIGHT | MOVE_STRAFELEFT | MOVE_UP | MOVE_DOWN | MOVE_PITCHUP | MOVE_PITCHDOWN | MOVE_FOCUS;
+ 
++constexpr float CAMERA_PRECISE_SPEED = 0.25f;
++
++static float camera_speed_factor( Qt::KeyboardModifiers modifiers ){
++	return modifiers.testFlag( Qt::ShiftModifier ) ? CAMERA_PRECISE_SPEED : 1.f;
++}
++
+ Vector3 Camera_getFocusPos( camera_t& camera );
+ 
+ void Cam_KeyControl( camera_t& camera, float dtime ){
++	const unsigned int movement = camera.movementflags | camera.navigationflags;
+ 	// Update angles
+ 	const float dangle = 25.f * dtime * g_camwindow_globals_private.m_angleSpeed;
+-	if ( camera.movementflags & MOVE_ROTLEFT ) {
++	if ( movement & MOVE_ROTLEFT ) {
+ 		camera.angles[CAMERA_YAW] += dangle;
+ 	}
+-	if ( camera.movementflags & MOVE_ROTRIGHT ) {
++	if ( movement & MOVE_ROTRIGHT ) {
+ 		camera.angles[CAMERA_YAW] -= dangle;
+ 	}
+-	if ( camera.movementflags & MOVE_PITCHUP ) {
++	if ( movement & MOVE_PITCHUP ) {
+ 		camera.angles[CAMERA_PITCH] = std::min( camera.angles[CAMERA_PITCH] + dangle, 90.f );
+ 	}
+-	if ( camera.movementflags & MOVE_PITCHDOWN ) {
++	if ( movement & MOVE_PITCHDOWN ) {
+ 		camera.angles[CAMERA_PITCH] = std::max( camera.angles[CAMERA_PITCH] - dangle, -90.f );
+ 	}
+ 
+@@ -477,27 +423,28 @@
+ 		                                           / g_camwindow_globals_private.m_time_toMaxSpeed * 1000,
+ 		                                           static_cast<float>( g_camwindow_globals_private.m_nMoveSpeed ) );
+ 	}
+-	const float dpos = dtime * camera.m_keymove_speed_current;
++	const float dpos = dtime * camera.m_keymove_speed_current
++	                   * camera_speed_factor( QApplication::keyboardModifiers() );
+ 	// Update position
+-	if ( camera.movementflags & MOVE_FORWARD ) {
++	if ( movement & MOVE_FORWARD ) {
+ 		camera.origin += camera.forward * dpos;
+ 	}
+-	if ( camera.movementflags & MOVE_BACK ) {
++	if ( movement & MOVE_BACK ) {
+ 		camera.origin -= camera.forward * dpos;
+ 	}
+-	if ( camera.movementflags & MOVE_STRAFERIGHT ) {
++	if ( movement & MOVE_STRAFERIGHT ) {
+ 		camera.origin += camera.right * dpos;
+ 	}
+-	if ( camera.movementflags & MOVE_STRAFELEFT ) {
++	if ( movement & MOVE_STRAFELEFT ) {
+ 		camera.origin -= camera.right * dpos;
+ 	}
+-	if ( camera.movementflags & MOVE_UP ) {
++	if ( movement & MOVE_UP ) {
+ 		camera.origin += g_vector3_axis_z * dpos;
+ 	}
+-	if ( camera.movementflags & MOVE_DOWN ) {
++	if ( movement & MOVE_DOWN ) {
+ 		camera.origin -= g_vector3_axis_z * dpos;
+ 	}
+-	if ( camera.movementflags & MOVE_FOCUS ) {
++	if ( movement & MOVE_FOCUS ) {
+ 		camera.origin = Camera_getFocusPos( camera );
+ 	}
+ 
+@@ -516,19 +463,28 @@
+ 	CameraMovedNotify();
+ }
+ 
+-void Camera_setMovementFlags( camera_t& camera, unsigned int mask ){
+-	if ( ( ~camera.movementflags & mask ) != 0 && camera.movementflags == 0 ) {
++static void camera_update_movement_loop( camera_t& camera, unsigned int previous ){
++	const unsigned int current = camera.movementflags | camera.navigationflags;
++	if( previous == 0 && current != 0 ){
+ 		camera.m_idleDraw.startLoop( ReferenceCaller<camera_t, void(), Camera_keyMove>( camera ) );
+ 		camera.m_keycontrol_timer.start();
+ 		camera.m_keymove_speed_current = 0;
+ 	}
++	else if( previous != 0 && current == 0 ){
++		camera.m_idleDraw.breakLoop();
++	}
++}
++
++void Camera_setMovementFlags( camera_t& camera, unsigned int mask ){
++	const unsigned int previous = camera.movementflags | camera.navigationflags;
+ 	camera.movementflags |= mask;
+-}
++	camera_update_movement_loop( camera, previous );
++}
++
+ void Camera_clearMovementFlags( camera_t& camera, unsigned int mask ){
+-	if ( ( camera.movementflags & ~mask ) == 0 && camera.movementflags != 0 ) {
+-		camera.m_idleDraw.breakLoop();
+-	}
++	const unsigned int previous = camera.movementflags | camera.navigationflags;
+ 	camera.movementflags &= ~mask;
++	camera_update_movement_loop( camera, previous );
+ }
+ 
+ void Camera_MoveForward_KeyDown( camera_t& camera ){
+@@ -711,45 +667,6 @@
+ 	}
+ };
+ 
+-
+-static void Camera_motionDelta( int x, int y, const QMouseEvent *event, camera_t& cam ){
+-	cam.m_mouseMove.motion_delta( x, y, event );
+-	cam.m_idleDraw.queueDraw( DeferredMotionDelta2::InvokeCaller( cam.m_mouseMove ), true );
+-
+-	cam.m_orbit = ( event->modifiers() & Qt::KeyboardModifier::AltModifier ) && ( event->buttons() & Qt::MouseButton::RightButton );
+-	if( cam.m_orbit ){
+-		cam.m_strafe = false;
+-		return;
+-	}
+-
+-	cam.m_strafe_forward_invert = false;
+-
+-	switch ( g_camwindow_globals_private.m_strafeMode )
+-	{
+-	case 0:
+-		cam.m_strafe = false;
+-		break;
+-	case 1:
+-		cam.m_strafe = ( event->modifiers() & Qt::KeyboardModifier::ControlModifier ) || ( event->buttons() & Qt::MouseButton::RightButton );
+-		cam.m_strafe_forward = false;
+-		break;
+-	case 2:
+-		cam.m_strafe = ( event->modifiers() & Qt::KeyboardModifier::ControlModifier ) || ( event->buttons() & Qt::MouseButton::RightButton );
+-		cam.m_strafe_forward = true;
+-		break;
+-	case 4:
+-		cam.m_strafe_forward_invert = true; // fall through
+-	default: /* 3 & 4 */
+-		cam.m_strafe = ( event->modifiers() & Qt::KeyboardModifier::ControlModifier ) || ( event->buttons() & Qt::MouseButton::RightButton ) || ( event->modifiers() & Qt::KeyboardModifier::ShiftModifier );
+-		cam.m_strafe_forward = ( event->modifiers() & Qt::KeyboardModifier::ShiftModifier ) != 0;
+-		break;
+-	}
+-
+-	if( ( event->buttons() & Qt::MouseButton::LeftButton ) != 0 && g_camwindow_globals_private.m_strafeMode != 0 ){
+-		cam.m_strafe = true;
+-		cam.m_strafe_forward = false;
+-	}
+-}
+ 
+ #include "stream/stringstream.h"
+ 
+@@ -997,14 +914,10 @@
+ 	void DisableFreeMove();
+ 	void EnableFreeMove();
+ 	bool m_bFreeMove;
+-	bool m_bFreeMove_entering;
+ 
+ 	CameraView& getCameraView(){
+ 		return m_cameraview;
+ 	}
+-
+-	Timer m_rightClickTimer;
+-	float m_rightClickMove;
+ 
+ 	void selection_motion_freemove( const MotionDeltaValues& delta );
+ 
+@@ -1094,89 +1007,6 @@
+ // =============================================================================
+ // CamWnd class
+ 
+-void context_menu_show(){
+-	if( g_pParentWnd->ActiveXY() ){
+-		g_pParentWnd->ActiveXY()->OnContextMenu();
+-		g_bCamEntityMenu = true;
+-	}
+-}
+-
+-/* GDK_2BUTTON_PRESS doesn't always work in this case, so... */
+-/* with Qt freezepointer interrupts internal doubleclick timer, so use custom one */
+-inline bool context_menu_try( const CamWnd& camwnd ){
+-	//globalOutputStream() << camwnd->m_rightClickTimer.elapsed_msec() << '\n';
+-	return camwnd.m_rightClickTimer.elapsed_msec() < 250;
+-	//doesn't work if cam redraw > 200msec (3x click works): gtk_widget_queue_draw proceeds after timer.start()
+-}
+-
+-void camera_orbit_init( camera_t& cam, Vector2 xy ){
+-	xy.x() = ( ( 2.0f * xy.x() ) / cam.width ) - 1.0f; // window_to_normalised_device
+-	xy.y() = ( ( 2.0f * ( cam.height - 1 - xy.y() ) ) / cam.height ) - 1.0f;
+-
+-	const Vector2 epsilon( 8.f / cam.width, 8.f / cam.height ); //device epsilon
+-
+-	Scene_Intersect( *cam.m_view, xy, epsilon, cam.m_orbit_center );
+-
+-	cam.m_orbit_initial_pos = cam.origin;
+-	cam.m_orbit_offset = 0;
+-	cam.m_orbit = true;
+-}
+-
+-inline bool ORBIT_EVENT( const QMouseEvent& event ){
+-	return event.button() == Qt::MouseButton::RightButton && modifiers_for_state( event.modifiers() ) == c_modifierAlt;
+-}
+-inline bool M2_EVENT( const QMouseEvent& event ){
+-	return event.button() == Qt::MouseButton::RightButton && modifiers_for_state( event.modifiers() ) == c_modifierNone;
+-}
+-
+-static void enable_freelook_button_press( const QMouseEvent& event, CamWnd& camwnd ){
+-	const bool m2    = M2_EVENT( event );
+-	const bool m2alt = ORBIT_EVENT( event );
+-	if ( m2 || m2alt ) {
+-		camwnd.m_bFreeMove_entering = true;
+-		if( m2 && context_menu_try( camwnd ) ){
+-			context_menu_show();
+-		}
+-		else{
+-			if( m2alt )
+-				camera_orbit_init( camwnd.getCamera(), Vector2( event.x(), event.y() ) );
+-			camwnd.EnableFreeMove();
+-			camwnd.m_rightClickTimer.start();
+-			camwnd.m_rightClickMove = 0;
+-		}
+-	}
+-}
+-
+-static void disable_freelook_button_press( const QMouseEvent& event, CamWnd& camwnd ){
+-	const bool m2    = M2_EVENT( event );
+-	const bool m2alt = ORBIT_EVENT( event );
+-	if ( m2 || m2alt ) {
+-		camwnd.m_bFreeMove_entering = false;
+-		if( m2 && context_menu_try( camwnd ) ){
+-			camwnd.DisableFreeMove();
+-			context_menu_show();
+-		}
+-		else{
+-			if( m2alt )
+-				camera_orbit_init( camwnd.getCamera(), Vector2( event.x(), event.y() ) );
+-			camwnd.m_rightClickTimer.start();
+-			camwnd.m_rightClickMove = 0;
+-		}
+-	}
+-}
+-
+-static void disable_freelook_button_release( const QMouseEvent& event, CamWnd& camwnd ){
+-	const bool m2    = M2_EVENT( event );
+-	const bool m2alt = ORBIT_EVENT( event );
+-	if ( m2 || m2alt ) {
+-		camwnd.getCamera().m_orbit = false;
+-		if( ( ( camwnd.m_rightClickTimer.elapsed_msec() < 300 && camwnd.m_rightClickMove < 56 ) == !camwnd.m_bFreeMove_entering ) ){
+-			camwnd.DisableFreeMove();
+-		}
+-	}
+-}
+-
+-
+ void camwnd_update_xor_rectangle( CamWnd& self, rect_t area ){
+ 	self.m_XORRect = area;
+ 	self.queue_draw();
+@@ -1184,8 +1014,7 @@
+ 
+ 
+ static void selection_button_press( const QMouseEvent& event, WindowObserver* observer ){
+-	if( !ORBIT_EVENT( event ) )
+-		observer->onMouseDown( WindowVector( event.x(), event.y() ), button_for_button( event.button() ), modifiers_for_state( event.modifiers() ) );
++	observer->onMouseDown( WindowVector( event.x(), event.y() ), button_for_button( event.button() ), modifiers_for_state( event.modifiers() ) );
+ }
+ 
+ static void selection_button_release( const QMouseEvent& event, WindowObserver* observer ){
+@@ -1203,8 +1032,7 @@
+ }
+ 
+ static void selection_button_press_freemove( QWidget* widget, const QMouseEvent& event, WindowObserver* observer ){
+-	if( !ORBIT_EVENT( event ) )
+-		observer->onMouseDown( windowvector_for_widget_centre( widget ), button_for_button( event.button() ), modifiers_for_state( event.modifiers() ) );
++	observer->onMouseDown( windowvector_for_widget_centre( widget ), button_for_button( event.button() ), modifiers_for_state( event.modifiers() ) );
+ }
+ 
+ static void selection_button_release_freemove( QWidget* widget, const QMouseEvent& event, WindowObserver* observer ){
+@@ -1212,108 +1040,19 @@
+ }
+ 
+ void CamWnd::selection_motion_freemove( const MotionDeltaValues& delta ){
+-	m_rightClickMove += sqrt( delta.x * delta.x + delta.y * delta.y );
+ 	m_window_observer->incMouseMove( WindowVector( delta.x, delta.y ) );
+ 	m_window_observer->onMouseMotion( windowvector_for_widget_centre( m_gl_widget ), modifiers_for_state( delta.mouseMoveEvent.modifiers() ) );
+ }
+ typedef MemberCaller<CamWnd, void(const MotionDeltaValues&), &CamWnd::selection_motion_freemove> CamWnd_selection_motion_freemove;
+ 
+ 
+-void camera_orbit_scroll( camera_t& camera ){
+-	Vector3 viewvector = vector3_normalised( camera.m_orbit_center - Camera_getOrigin( camera ) );
+-	if( vector3_dot( viewvector, -camera.vpn ) < 0 )
+-		vector3_negate( viewvector );
+-	float offset = vector3_length( camera.m_orbit_center - camera.m_orbit_initial_pos );
+-	const int off = camera.m_orbit_offset;
+-	if( off < 0 || off > 16 ){
+-		offset -= offset * off / 8 * pow( 2.0f, ( off < 0 ? -off : off - 16 ) / 8.f );
+-	}
+-	else if( off == 8 ){
+-		offset = std::min( 8.f, offset / 16.f ); //prevent zero offset, resulting in NAN viewvector in the next scroll step
+-	}
+-	else{
+-		offset -= offset * off / 8;
+-	}
+-	Camera_setOrigin( camera, camera.m_orbit_center - viewvector * offset );
+-}
+-
+-/*
+-two alt solutions:
+-		const Matrix4 screen2world = matrix4_affine_inverse( cam.m_view->GetViewMatrix() );
+-		Vector3 normalized;
+-		normalized[0] = ( ( 2.0f * x ) / cam.width ) - 1.0f; // window_to_normalised_device
+-		normalized[1] = ( ( 2.0f * ( cam.height - 1 - y ) ) / cam.height ) - 1.0f;
+-		normalized[2] = 1.f;
+-		normalized = vector4_projected( matrix4_transformed_vector4( screen2world, Vector4( normalized, 1 ) ) );
+-
+-		const Matrix4 screen2world = matrix4_full_inverse( cam.m_view->GetViewMatrix() );
+-		Vector3 normalized;
+-		normalized[0] = ( ( 2.0f * x ) / cam.width ) - 1.0f; // window_to_normalised_device
+-		normalized[1] = ( ( 2.0f * ( cam.height - 1 - y ) ) / cam.height ) - 1.0f;
+-		normalized[2] = -1;
+-		normalized = vector4_projected( matrix4_transformed_vector4( screen2world, Vector4( normalized, 1 ) ) );
+-*/
+-static void camera_zoom( CamWnd& camwnd, float x, float y, float step ){
+-	const camera_t& cam = camwnd.getCamera();
+-	if( camwnd.m_bFreeMove || !g_camwindow_globals_private.m_bZoomToPointer ){
+-		Camera_setOrigin( camwnd, Camera_getOrigin( camwnd ) + cam.forward * step );
+-	}
+-	else{
+-		//const Matrix4 screen2world = matrix4_affine_inverse( matrix4_multiplied_by_matrix4( cam.projection, cam.modelview ) );
+-		const Matrix4 screen2world = matrix4_affine_inverse( cam.m_view->GetViewMatrix() );
+-
+-		Vector3 normalized;
+-
+-		normalized[0] = 2.f * x / cam.width - 1.f;
+-		normalized[1] = 2.f * y / cam.height - 1.f;
+-		normalized[1] *= -1;
+-		normalized[2] = 0;
+-
+-		normalized *= ( camera_t::near_z * 2.f );
+-			//globalOutputStream() << normalized << " normalized    ";
+-		matrix4_transform_point( screen2world, normalized );
+-			//globalOutputStream() << normalized << '\n';
+-		const Vector3 norm = vector3_normalised( normalized - Camera_getOrigin( camwnd ) );
+-			//globalOutputStream() << normalized - Camera_getOrigin( *camwnd ) << "  normalized - Camera_getOrigin( *camwnd )\n";
+-			//globalOutputStream() << norm << "  norm\n";
+-		Camera_setOrigin( camwnd, Camera_getOrigin( camwnd ) + norm * step );
+-	}
+-}
+-
+ static void wheelmove_scroll( const QWheelEvent& event, CamWnd& camwnd ){
+-	camera_t& cam = camwnd.getCamera();
+-
+-	const int angleDelta = ( std::abs( event.angleDelta().y() ) > std::abs( event.angleDelta().x() ) ) // normal y() goes to x() with ALT pressed
+-	                      ? event.angleDelta().y()
+-						  : event.angleDelta().x();
+-
+-	if ( angleDelta > 0 ) {
+-		if ( cam.movementflags & MOVE_FOCUS ) {
+-			++cam.m_focus_offset;
+-			return;
+-		}
+-		else if( cam.m_orbit ){
+-			++cam.m_orbit_offset;
+-			camera_orbit_scroll( cam );
+-			return;
+-		}
+-
+-		Camera_Freemove_updateAxes( cam );
+-		camera_zoom( camwnd, event.position().x(), event.position().y(), g_camwindow_globals_private.m_nScrollMoveSpeed );
+-	}
+-	else if ( angleDelta < 0 ) {
+-		if ( cam.movementflags & MOVE_FOCUS ) {
+-			--cam.m_focus_offset;
+-			return;
+-		}
+-		else if( cam.m_orbit ){
+-			--cam.m_orbit_offset;
+-			camera_orbit_scroll( cam );
+-			return;
+-		}
+-
+-		Camera_Freemove_updateAxes( cam );
+-		camera_zoom( camwnd, event.position().x(), event.position().y(), -g_camwindow_globals_private.m_nScrollMoveSpeed );
++	const int delta = event.angleDelta().y();
++	if( delta != 0 ){
++		camera_t& camera = camwnd.getCamera();
++		const float step = g_camwindow_globals_private.m_nScrollMoveSpeed
++		                 * ( delta / 120.f ) * camera_speed_factor( event.modifiers() );
++		Camera_setOrigin( camera, camera.origin - camera.vpn * step );
+ 	}
+ }
+ 
+@@ -1578,6 +1317,7 @@
+ public:
+ 	CamGLWidget( CamWnd& camwnd ) : QOpenGLWidget(), m_camwnd( camwnd ) {
+ 		setMouseTracking( true );
++		setFocusPolicy( Qt::ClickFocus );
+ 	}
+ 
+ 	~CamGLWidget() override {
+@@ -1622,15 +1362,64 @@
+ 		}
+ 	}
+ 
++	bool event( QEvent* event ) override {
++		if( event->type() == QEvent::ShortcutOverride ){
++			auto* key = static_cast<QKeyEvent*>( event );
++			if( navigationKey( *key ) ){
++				key->accept();
++				return true;
++			}
++		}
++		else if( event->type() == QEvent::FocusOut || event->type() == QEvent::WindowDeactivate || event->type() == QEvent::Hide ){
++			camera_t& camera = m_camwnd.getCamera();
++			camera.navigationflags = 0;
++			camera.movementflags = 0;
++			camera.m_idleDraw.breakLoop();
++			if( m_camwnd.m_bFreeMove )
++				m_camwnd.DisableFreeMove();
++		}
++		else if( event->type() == QEvent::UngrabMouse && m_camwnd.m_bFreeMove ){
++			m_camwnd.DisableFreeMove();
++		}
++		return QOpenGLWidget::event( event );
++	}
++
++	void keyPressEvent( QKeyEvent* event ) override {
++		if( const unsigned int mask = navigationKey( *event ) ){
++			if( !event->isAutoRepeat() )
++				setNavigationFlags( m_camwnd.getCamera().navigationflags | mask );
++			event->accept();
++		}
++		else{
++			QOpenGLWidget::keyPressEvent( event );
++		}
++	}
++
++	void keyReleaseEvent( QKeyEvent* event ) override {
++		const unsigned int mask = navigationMask( event->key() );
++		if( mask & m_camwnd.getCamera().navigationflags ){
++			if( !event->isAutoRepeat() )
++				setNavigationFlags( m_camwnd.getCamera().navigationflags & ~mask );
++			event->accept();
++		}
++		else{
++			QOpenGLWidget::keyReleaseEvent( event );
++		}
++	}
++
+ 	void mousePressEvent( QMouseEvent *event ) override {
+-		if( !m_camwnd.m_bFreeMove ){
+-			setFocus();
++		setFocus();
++		if( event->button() == Qt::RightButton
++		    && event->buttons() == Qt::RightButton
++		    && event->modifiers() == Qt::NoModifier ){
++			if( !m_camwnd.m_bFreeMove )
++				m_camwnd.EnableFreeMove();
++		}
++		else if( m_camwnd.m_bFreeMove ){
++			selection_button_press_freemove( this, scaledEvent( event ), m_camwnd.m_window_observer );
++		}
++		else{
+ 			selection_button_press( scaledEvent( event ), m_camwnd.m_window_observer );
+-			enable_freelook_button_press( scaledEvent( event ), m_camwnd );
+-		}
+-		else{
+-			selection_button_press_freemove( this, scaledEvent( event ), m_camwnd.m_window_observer );
+-			disable_freelook_button_press( scaledEvent( event ), m_camwnd );
+ 		}
+ 	}
+ 	void mouseMoveEvent( QMouseEvent *event ) override {
+@@ -1638,17 +1427,16 @@
+ 			m_camwnd.m_deferred_motion.motion( scaledEvent( event ) );
+ 			m_camwnd.getCamera().m_idleDraw.queueDraw( DeferredMotion2::InvokeCaller( m_camwnd.m_deferred_motion ), false );
+ 		}
++	}
++	void mouseReleaseEvent( QMouseEvent *event ) override {
++		if( m_camwnd.m_bFreeMove ){
++			if( event->button() == Qt::RightButton )
++				m_camwnd.DisableFreeMove();
++			else
++				selection_button_release_freemove( this, scaledEvent( event ), m_camwnd.m_window_observer );
++		}
+ 		else{
+-			;
+-		}
+-	}
+-	void mouseReleaseEvent( QMouseEvent *event ) override {
+-		if( !m_camwnd.m_bFreeMove ){
+ 			selection_button_release( scaledEvent( event ), m_camwnd.m_window_observer );
+-		}
+-		else{
+-			selection_button_release_freemove( this, scaledEvent( event ), m_camwnd.m_window_observer );
+-			disable_freelook_button_release( scaledEvent( event ), m_camwnd );
+ 		}
+ 	}
+ 	void wheelEvent( QWheelEvent *event ) override {
+@@ -1657,15 +1445,36 @@
+ 			m_camwnd.m_parent->activateWindow();
+ 			m_camwnd.m_parent->raise();
+ 		}
+-		wheelmove_scroll( scaledEvent( event ), m_camwnd );
++		wheelmove_scroll( *event, m_camwnd );
+ 	}
+ private:
+ 	QMouseEvent scaledEvent( const QMouseEvent *event ) const {
+ 		return QMouseEvent( event->type(), event->localPos() * m_scale, event->windowPos() * m_scale, event->screenPos() * m_scale, event->button(), event->buttons(), event->modifiers() );
+ 	}
+-	QWheelEvent scaledEvent( const QWheelEvent *event ) const {
+-		return QWheelEvent( event->position() * m_scale, event->globalPosition() * m_scale, event->pixelDelta(), event->angleDelta(), event->buttons(), event->modifiers(), event->phase(), false );
+-	}
++	static unsigned int navigationMask( int key ){
++		switch( key ){
++		case Qt::Key_W: return MOVE_FORWARD;
++		case Qt::Key_S: return MOVE_BACK;
++		case Qt::Key_A: return MOVE_STRAFELEFT;
++		case Qt::Key_D: return MOVE_STRAFERIGHT;
++		case Qt::Key_Q: return MOVE_DOWN;
++		case Qt::Key_E: return MOVE_UP;
++		default: return MOVE_NONE;
++		}
++	}
++
++	static unsigned int navigationKey( const QKeyEvent& event ){
++		return ( event.modifiers() == Qt::NoModifier || event.modifiers() == Qt::ShiftModifier )
++		       ? navigationMask( event.key() ) : MOVE_NONE;
++	}
++
++	void setNavigationFlags( unsigned int flags ){
++		camera_t& camera = m_camwnd.getCamera();
++		const unsigned int previous = camera.movementflags | camera.navigationflags;
++		camera.navigationflags = flags;
++		camera_update_movement_loop( camera, previous );
++	}
++
+ };
+ 
+ CamWnd::CamWnd() :
+@@ -1778,10 +1587,12 @@
+ 	m_gl_widget->setFocus();
+ 	m_freezePointer.freeze_pointer( m_gl_widget,
+ 		[this]( int x, int y, const QMouseEvent *event ){
+-			Camera_motionDelta( x, y, event, m_Camera );
++			if( event->buttons().testFlag( Qt::RightButton ) )
++				Camera_mouseMove( m_Camera, x, y, *event );
+ 		},
+ 		[this](){
+-			DisableFreeMove(); // if there's an OS-level focus out of the application then we can release the camera cursor grab
++			if( m_bFreeMove )
++				DisableFreeMove();
+ 		} );
+ 
+ 	CamWnd_Update( *this );
+@@ -1797,7 +1608,7 @@
+ 	CamWnd_Remove_Handlers_FreeMove( *this );
+ 	CamWnd_Add_Handlers_Move( *this );
+ 
+-	m_freezePointer.unfreeze_pointer( true );
++	m_freezePointer.unfreeze_pointer( false ); // Restore the position from before the press.
+ 
+ 	CamWnd_Update( *this );
+ }
+@@ -2399,10 +2210,8 @@
+ 	page.appendSpinner( "Movement Speed", g_camwindow_globals_private.m_nMoveSpeed, 1, CAM_MAX_SPEED );
+ 	page.appendSpinner( "Time to Max Speed", g_camwindow_globals_private.m_time_toMaxSpeed, 0, 5000 );
+ 	page.appendSpinner( "Scroll Move Speed", g_camwindow_globals_private.m_nScrollMoveSpeed, 0, 999 );
+-	page.appendSpinner( "Strafe Speed", g_camwindow_globals_private.m_strafeSpeed, 0.1, 10 );
+ 	page.appendSpinner( "Mouse Sensitivity", g_camwindow_globals_private.m_angleSpeed, 0.1, 30 );
+ 	page.appendCheckBox( "", "Invert mouse vertical axis", g_camwindow_globals_private.m_bCamInverseMouse );
+-	page.appendCheckBox( "", "Zoom to Mouse pointer", g_camwindow_globals_private.m_bZoomToPointer );
+ 	page.appendCheckBox(
+ 	    "", "Discrete movement",
+ 	    FreeCaller<void(bool), CamWnd_Move_Discrete_Import>(),
+@@ -2443,14 +2252,6 @@
+ 		);
+ 	}
+ 
+-	const char* strafe_mode[] = { "None", "Up", "Forward", "Both", "Both Inverted" };
+-
+-	page.appendCombo(
+-	    "Strafe Mode",
+-	    g_camwindow_globals_private.m_strafeMode,
+-	    StringArrayRange( strafe_mode )
+-	);
+-
+ 	page.appendSpinner( "Field Of View", 1.0, 175.0,
+ 	                    FloatImportCallback( fieldOfViewImportCaller() ),
+ 	                    FloatExportCallback( FloatExportCaller( camera_t::fieldOfView ) ),
+@@ -2546,7 +2347,6 @@
+ 	GlobalPreferenceSystem().registerPreference( "CamMoveSpeed", IntImportStringCaller( g_camwindow_globals_private.m_nMoveSpeed ), IntExportStringCaller( g_camwindow_globals_private.m_nMoveSpeed ) );
+ 	GlobalPreferenceSystem().registerPreference( "CamMoveTimeToMaxSpeed", IntImportStringCaller( g_camwindow_globals_private.m_time_toMaxSpeed ), IntExportStringCaller( g_camwindow_globals_private.m_time_toMaxSpeed ) );
+ 	GlobalPreferenceSystem().registerPreference( "ScrollMoveSpeed", IntImportStringCaller( g_camwindow_globals_private.m_nScrollMoveSpeed ), IntExportStringCaller( g_camwindow_globals_private.m_nScrollMoveSpeed ) );
+-	GlobalPreferenceSystem().registerPreference( "CamStrafeSpeed", FloatImportStringCaller( g_camwindow_globals_private.m_strafeSpeed ), FloatExportStringCaller( g_camwindow_globals_private.m_strafeSpeed ) );
+ 	GlobalPreferenceSystem().registerPreference( "Sensitivity", FloatImportStringCaller( g_camwindow_globals_private.m_angleSpeed ), FloatExportStringCaller( g_camwindow_globals_private.m_angleSpeed ) );
+ 	GlobalPreferenceSystem().registerPreference( "CamInverseMouse", BoolImportStringCaller( g_camwindow_globals_private.m_bCamInverseMouse ), BoolExportStringCaller( g_camwindow_globals_private.m_bCamInverseMouse ) );
+ 	GlobalPreferenceSystem().registerPreference( "CamDiscrete", makeBoolStringImportCallback( CamWndMoveDiscreteImportCaller() ), BoolExportStringCaller( g_camwindow_globals_private.m_bCamDiscrete ) );
+@@ -2556,10 +2356,8 @@
+ 	GlobalPreferenceSystem().registerPreference( "ColorCameraSelection", Vector3ImportStringCaller( g_camwindow_globals.color_selbrushes3d ), Vector3ExportStringCaller( g_camwindow_globals.color_selbrushes3d ) );
+ 	GlobalPreferenceSystem().registerPreference( "CameraRenderMode", makeIntStringImportCallback( RenderModeImportCaller() ), makeIntStringExportCallback( RenderModeExportCaller() ) );
+ 	GlobalPreferenceSystem().registerPreference( "CameraMSAA", IntImportStringCaller( g_camwindow_globals_private.m_MSAA ), IntExportStringCaller( g_camwindow_globals_private.m_MSAA ) );
+-	GlobalPreferenceSystem().registerPreference( "StrafeMode", IntImportStringCaller( g_camwindow_globals_private.m_strafeMode ), IntExportStringCaller( g_camwindow_globals_private.m_strafeMode ) );
+ 	GlobalPreferenceSystem().registerPreference( "CameraFaceWire", BoolImportStringCaller( g_camwindow_globals_private.m_bFaceWire ), BoolExportStringCaller( g_camwindow_globals_private.m_bFaceWire ) );
+ 	GlobalPreferenceSystem().registerPreference( "CameraFaceFill", BoolImportStringCaller( g_camwindow_globals_private.m_bFaceFill ), BoolExportStringCaller( g_camwindow_globals_private.m_bFaceFill ) );
+-	GlobalPreferenceSystem().registerPreference( "3DZoomInToPointer", BoolImportStringCaller( g_camwindow_globals_private.m_bZoomToPointer ), BoolExportStringCaller( g_camwindow_globals_private.m_bZoomToPointer ) );
+ 	GlobalPreferenceSystem().registerPreference( "fieldOfView", FloatImportStringCaller( camera_t::fieldOfView ), FloatExportStringCaller( camera_t::fieldOfView ) );
+ 	//.  HACK: always show camera from start to have at least one ogl viewport shown = ogl initialized; otherwise loading map = loading textures = crash
+ //	GlobalPreferenceSystem().registerPreference( "CamVIS", makeBoolStringImportCallback( ToggleShownImportBoolCaller( g_camera_shown ) ), makeBoolStringExportCallback( ToggleShownExportBoolCaller( g_camera_shown ) ) );
