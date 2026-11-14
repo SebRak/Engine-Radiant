@@ -57,7 +57,7 @@ jobs:
           test "$(g++ -dumpmachine)" = x86_64-w64-mingw32
           mkdir -p ../dist
           pacman -Q > ../dist/packages.txt
-          make MAKEFILE_CONF=msys2-Makefile.conf BUILD=release -j4 2>&1 | tee ../dist/build.log
+          make MAKEFILE_CONF=msys2-Makefile.conf BUILD=release CXXFLAGS="-include cstdint" -j4 2>&1 | tee ../dist/build.log
           git diff --exit-code HEAD
 
       - name: Verify and package
