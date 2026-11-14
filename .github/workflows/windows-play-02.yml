@@ -76,11 +76,11 @@ jobs:
         run: |
           set -euo pipefail
           patch=../integration/patches/play-02.patch
-          printf '%s  %s\n' bee3e32a7d2abca4244c2e677d92b7e1f5e7edab2ab12a672d3de8fbe1b1fe9e "$patch" | sha256sum -c -
-          git -c core.autocrlf=false checkout-index --force -- libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/mainframe.cpp radiant/map.cpp radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp
+          printf '%s  %s\n' f59e7d0d04e9d49646c759ad8420f82c76cc92ed74b7a487ecf261fd9c3ea93c "$patch" | sha256sum -c -
+          git -c core.autocrlf=false checkout-index --force -- libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/mainframe.cpp radiant/map.cpp radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp radiant/referencecache.h
           git -c core.autocrlf=false apply --check "$patch"
           git -c core.autocrlf=false apply "$patch"
-          test "$(git diff --name-only HEAD | paste -sd ' ')" = "libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/camwindow.cpp radiant/mainframe.cpp radiant/map.cpp radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp"
+          test "$(git diff --name-only HEAD | paste -sd ' ')" = "libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/camwindow.cpp radiant/mainframe.cpp radiant/map.cpp radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp radiant/referencecache.h"
           git diff --check HEAD
           git diff --binary HEAD > ../dist/play-02-applied.patch
           cp "$patch" ../dist/play-02.patch

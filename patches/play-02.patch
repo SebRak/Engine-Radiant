@@ -180,7 +180,7 @@
  void create_main_toolbar( QToolBar *toolbar,  MainFrame::EViewStyle style ){
  	QSvgGenerator dummy; // reference symbol, so that Qt5Svg.dll required dependency is explicit, also install-dlls-msys2-mingw.sh will find it
  
-+	if ( string_equal( g_pGameDescription->mGameFile, "engine.game" ) ) {
++	if ( string_equal( g_pGameDescription->mGameFile.c_str(), "engine.game" ) ) {
 +		auto* play = toolbar->addAction( toolbar->style()->standardIcon( QStyle::SP_MediaPlay ), "Play" );
 +		play->setToolTip( QString::fromUtf8( "Play \xE2\x80\x94 uruchom aktualn\xC4\x85 map\xC4\x99 w Engine" ) );
 +		QObject::connect( play, &QAction::triggered, toolbar, &Build_runEnginePlay );
@@ -189,3 +189,13 @@
   	File_constructToolbar( toolbar );
  	toolbar_append_separator( toolbar );
  
+--- a/radiant/referencecache.h
++++ b/radiant/referencecache.h
+@@ -23,6 +23,7 @@
+ 
+ /// \brief Saves all open resource references if they differ from the version on disk.
+ void SaveReferences();
++bool References_Saved();
+ /// \brief Flushes the cache of resource references. All resource references must be released before calling this.
+ void FlushReferences();
+ /// \brief Reloads all resource references that differ from the version on disk.
