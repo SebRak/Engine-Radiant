@@ -1,0 +1,98 @@
+name: Windows x64 reference build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-reference:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    env:
+      UPSTREAM_SHA: 68ecbed64b7be78741878c730279b5471d978c7c
+      PACKAGE: Engine-Radiant-0.3-reference-win64.zip
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Set up MSYS2 MINGW64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          path-type: minimal
+          update: false
+          release: false
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-svg
+            mingw-w64-x86_64-assimp
+            mingw-w64-x86_64-libxml2
+            mingw-w64-x86_64-glib2
+            mingw-w64-x86_64-libpng
+            mingw-w64-x86_64-libjpeg-turbo
+            mingw-w64-x86_64-zlib
+            git unzip p7zip
+
+      - name: Check out reference source
+        uses: actions/checkout@v4
+        with:
+          repository: Garux/netradiant-custom
+          ref: ${{ env.UPSTREAM_SHA }}
+          path: upstream
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Build unchanged upstream
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$UPSTREAM_SHA"
+          test "$MSYSTEM" = MINGW64
+          test "$(g++ -dumpmachine)" = x86_64-w64-mingw32
+          mkdir -p ../dist
+          pacman -Q > ../dist/packages.txt
+          make MAKEFILE_CONF=msys2-Makefile.conf BUILD=release -j4 2>&1 | tee ../dist/build.log
+          git diff --exit-code HEAD
+
+      - name: Verify and package
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          mkdir -p install/settings install/licenses
+          cp LICENSE GPL LGPL install/licenses/
+          printf '%s\n' "NetRadiant-Custom $UPSTREAM_SHA" \
+            "https://github.com/Garux/netradiant-custom/tree/$UPSTREAM_SHA" \
+            "Windows x64 / MSYS2 MINGW64 / Release" > install/BUILD-INFO.txt
+          cp ../dist/packages.txt install/
+          for f in radiant.exe q3map2.exe q2map.exe qdata3.exe h2data.exe mbspc.exe \
+            Qt5Core.dll Qt5Gui.dll Qt5Widgets.dll Qt5Svg.dll \
+            modules/mapq3.dll modules/imagepng.dll modules/assmodel.dll plugins/brushexport.dll; do
+            test -s "install/$f"
+            objdump -f "install/$f" | grep 'file format pei-x86-64'
+          done
+          test -n "$(find install -name qwindows.dll -print -quit)"
+          find install/gamepacks/games -name '*.game' | grep -v '^$' > ../dist/gamepacks.txt
+          git archive --format=zip --prefix=netradiant-custom/ -o "../dist/NetRadiant-Custom-${UPSTREAM_SHA}.source.zip" HEAD
+          (cd install && 7z a -tzip "../../dist/$PACKAGE" . && 7z t "../../dist/$PACKAGE")
+          (cd ../dist && sha256sum "$PACKAGE" > "$PACKAGE.sha256")
+
+      - name: Upload reference build
+        uses: actions/upload-artifact@v4
+        with:
+          name: Engine-Radiant-0.3-reference-win64
+          path: dist/
+          if-no-files-found: error
+
+      - name: Preserve failed build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-reference-build-diagnostics
+          path: dist/
+          if-no-files-found: ignore
