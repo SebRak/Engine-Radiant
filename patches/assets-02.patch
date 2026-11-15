@@ -1,0 +1,332 @@
+--- a/radiant/modelwindow.h
++++ b/radiant/modelwindow.h
+@@ -26,7 +26,8 @@
+ void ModelBrowser_Destroy();
+ 
+ 
+-class QWidget* ModelBrowser_constructWindow( QWidget* toplevel );
++class QWidget* ModelBrowser_constructWindow( QWidget* toplevel, bool embedded = false );
++void ModelBrowser_showProps( const class QString& filter, bool fromStart );
+ void ModelBrowser_destroyWindow();
+ 
+ void ModelBrowser_flushReferences();
+--- a/radiant/modelwindow.cpp
++++ b/radiant/modelwindow.cpp
+@@ -530,6 +530,7 @@
+ 	std::vector<scene::Instance*> m_modelInstances;
+ public:
+ 	ModelFS m_modelFS;
++	bool m_embedded = false;
+ 	CopiedString m_prefFoldersToLoad = "*models/99*";
+ 	ModelBrowser() : m_scrollAdjustment( [this]( int value ){
+ 		//globalOutputStream() << "vertical scroll\n";
+@@ -1008,14 +1009,13 @@
+ 		}
+ 	}
+ 	void mouseDoubleClick(){
+-		/* create misc_model */
+ 		if ( m_modBro.m_currentFolder != nullptr && m_modBro.m_currentModelId >= 0 ) {
+ 			UndoableCommand undo( "insertModel" );
+ 			// todo
+ 			// GlobalEntityClassManager() search for "misc_model"
+ 			// otherwise search for entityClass->miscmodel_is
+ 			// otherwise go with GlobalEntityClassManager().findOrInsert( "misc_model", false );
+-			EntityClass* entityClass = GlobalEntityClassManager().findOrInsert( "misc_model", false );
++			EntityClass* entityClass = GlobalEntityClassManager().findOrInsert( m_modBro.m_embedded? "prop" : "misc_model", false );
+ 			NodeSmartReference node( GlobalEntityCreator().createEntity( entityClass ) );
+ 
+ 			Node_getTraversable( GlobalSceneGraph().root() )->insert( node );
+@@ -1051,7 +1051,8 @@
+ 				EntityVisitor( const char* filePath ) : m_filePath( filePath ){
+ 				}
+ 				void visit( scene::Instance& instance ) const override {
+-					if( Entity* entity = Node_getEntity( instance.path().top() ) ){
++					if( Entity* entity = Node_getEntity( instance.path().top() );
++					    entity != nullptr && ( !g_ModelBrowser.m_embedded || string_equal( entity->getClassName(), "prop" ) ) ){
+ 						entity->setKeyValue( entity->getEntityClass().miscmodel_key(), m_filePath );
+ 					}
+ 				}
+@@ -1076,6 +1077,23 @@
+ };
+ 
+ 
++
++static void ModelBrowser_loadFolder( const ModelFS& folder, const char* path ){
++	ModelGraph_clear();
++	g_ModelBrowser.m_currentFolder = &folder;
++	g_ModelBrowser.m_currentFolderPath = path;
++
++	StringOutputStream filename( 128 );
++	for( const CopiedString& model : folder.m_files ){
++		filename( path, model );
++		auto *modelNode = new ModelNode;
++		modelNode->setModel( filename );
++		NodeSmartReference node( modelNode->node() );
++		Node_getTraversable( g_modelGraph->root() )->insert( node );
++	}
++	g_ModelBrowser.forEachModelInstance( models_set_transforms() );
++	g_ModelBrowser.queueDraw();
++}
+ 
+ static void TreeView_onRowActivated( const QModelIndex& index ){
+ 	StringOutputStream sstream( 64 );
+@@ -1097,25 +1115,10 @@
+ 
+ //%						globalOutputStream() << sstream << " sstream\n";
+ 
+-	ModelGraph_clear(); // this goes 1st: resets m_currentFolder
+-
+-	g_ModelBrowser.m_currentFolder = modelFS;
+-	g_ModelBrowser.m_currentFolderPath = sstream;
+-
+ 	{
+-		ScopeDisableScreenUpdates disableScreenUpdates( g_ModelBrowser.m_currentFolderPath.c_str(), "Loading Models" );
+-
+-		for( const CopiedString& filename : g_ModelBrowser.m_currentFolder->m_files ){
+-			sstream( g_ModelBrowser.m_currentFolderPath, filename );
+-			auto *modelNode = new ModelNode;
+-			modelNode->setModel( sstream );
+-			NodeSmartReference node( modelNode->node() );
+-			Node_getTraversable( g_modelGraph->root() )->insert( node );
+-		}
+-		g_ModelBrowser.forEachModelInstance( models_set_transforms() );
+-	}
+-
+-	g_ModelBrowser.queueDraw();
++		ScopeDisableScreenUpdates disableScreenUpdates( sstream.c_str(), "Loading Models" );
++		ModelBrowser_loadFolder( *modelFS, sstream.c_str() );
++	}
+ 
+ 	//deactivate, so SPACE and RETURN wont be broken for 2d
+ 	g_ModelBrowser.m_treeView->clearFocus();
+@@ -1213,7 +1216,38 @@
+ }
+ typedef ReferenceCaller<ModelPaths_ArchiveVisitor, void(const char*), ModelPaths_addFromArchive> ModelPaths_addFromArchiveCaller;
+ 
++void ModelBrowser_showProps( const QString& filter, bool fromStart ){
++	// The Engine profile exposes its placeable props as glTF under props/.
++	ModelGraph_clear();
++	auto& files = g_ModelBrowser.m_modelFS.m_files;
++	files.clear();
++	class PropsVisitor final : public Archive::Visitor
++	{
++		std::set<CopiedString>& m_files;
++		const QString& m_filter;
++		bool m_fromStart;
++	public:
++		PropsVisitor( std::set<CopiedString>& files, const QString& filter, bool fromStart )
++			: m_files( files ), m_filter( filter ), m_fromStart( fromStart ){
++		}
++		void visit( const char* name ) override {
++			if( !string_equal_nocase( path_get_extension( name ), "gltf" ) )
++				return;
++			const auto label = QString::fromUtf8( name ).mid( 6 );
++			if( m_fromStart? label.startsWith( m_filter, Qt::CaseInsensitive ) : label.contains( m_filter, Qt::CaseInsensitive ) )
++				m_files.emplace( name );
++		}
++	} visitor( files, filter, fromStart );
++	GlobalFileSystem().forEachArchive( ReferenceCaller<PropsVisitor, void(const char*), +[]( PropsVisitor& visitor, const char* archiveName ){
++		if( auto* archive = GlobalFileSystem().getArchive( archiveName, false ) )
++			archive->forEachFile( Archive::VisitorFunc( visitor, Archive::eFiles, 99 ), "props/" );
++	}>( visitor ), false, false );
++	ModelBrowser_loadFolder( g_ModelBrowser.m_modelFS, "" );
++}
++
+ void ModelBrowser_constructTree(){
++	if( g_ModelBrowser.m_embedded )
++		return;
+ 	g_ModelBrowser.m_modelFS.m_folders.clear();
+ 	g_ModelBrowser.m_modelFS.m_files.clear();
+ 	ModelGraph_clear();
+@@ -1263,8 +1297,9 @@
+ 	}
+ };
+ 
+-QWidget* ModelBrowser_constructWindow( QWidget* toplevel ){
++QWidget* ModelBrowser_constructWindow( QWidget* toplevel, bool embedded ){
+ 	g_ModelBrowser.m_parent = toplevel;
++	g_ModelBrowser.m_embedded = embedded;
+ 
+ 	auto *splitter = new QSplitter;
+ 	auto *containerWidgetLeft = new QWidget; // Adding a QLayout to a QSplitter is not supported, use proxy widget
+@@ -1317,6 +1352,12 @@
+ 		} );
+ 	}
+ 
++	if( embedded ){
++		containerWidgetRight->setParent( nullptr );
++		delete splitter;
++		g_ModelBrowser.m_treeView = nullptr;
++		return containerWidgetRight;
++	}
+ 	splitter->setStretchFactor( 0, 0 ); // consistent treeview side sizing on resizes
+ 	splitter->setStretchFactor( 1, 1 );
+ 	g_guiSettings.addSplitter( splitter, "ModelBrowser/splitter", { 100, 500 } );
+--- a/radiant/texwindow.h
++++ b/radiant/texwindow.h
+@@ -28,6 +28,7 @@
+ class QWidget;
+ QWidget* TextureBrowser_constructWindow( QWidget* toplevel );
+ void TextureBrowser_destroyWindow();
++void TextureBrowser_showModels();
+ 
+ 
+ const char* TextureBrowser_GetSelectedShader();
+--- a/radiant/texwindow.cpp
++++ b/radiant/texwindow.cpp
+@@ -26,6 +26,8 @@
+ //
+ 
+ #include "texwindow.h"
++#include "modelwindow.h"
++#include <QStackedWidget>
+ 
+ #include "debugging/debugging.h"
+ 
+@@ -164,6 +166,7 @@
+ 	QScrollBar* m_texture_scroll;
+ 	QTabWidget* m_tabs;
+ 	QTreeView* m_treeView;
++	QStackedWidget* m_assetPages = nullptr;
+ 	QStandardItemModel* m_treeViewModel;
+ 	QListWidget* m_tagsListWidget;
+ 	QMenu* m_tagsMenu;
+@@ -1171,6 +1174,17 @@
+ 	}
+ }
+ 
++namespace {
++constexpr int ModelsRole = Qt::UserRole + 1;
++
++void UpdateAssetModels(){
++	if( auto* pages = g_TexBro.m_assetPages; pages && pages->currentIndex() == 1 ){
++		const auto* filter = g_TexBro.m_filter_entry;
++		ModelBrowser_showProps( filter->text(), g_TextureBrowser_filter_searchFromStart );
++	}
++}
++}
++
+ void TextureBrowser_constructTreeStore(){
+ 	TextureGroups groups;
+ 	TextureGroups_constructTreeView( groups );
+@@ -1184,12 +1198,42 @@
+ 	else
+ 		TextureGroups_constructTreeModel_childless( groups, model );
+ 
++	if( g_TexBro.m_assetPages ){
++		auto* item = new QStandardItem( "models" );
++		item->setData( true, ModelsRole );
++		auto* root = model->invisibleRootItem();
++		int row = 0;
++		while( row < root->rowCount() && root->child( row )->text() < item->text() )
++			++row;
++		root->insertRow( row, item );
++	}
+ 	g_TexBro.m_treeView->setModel( model );
+ }
+ 
++void TextureBrowser_showModels(){
++	if( auto* pages = g_TexBro.m_assetPages ){
++		pages->setCurrentIndex( 1 );
++		for( int row = 0; row < g_TexBro.m_treeView->model()->rowCount(); ++row ){
++			const auto index = g_TexBro.m_treeView->model()->index( row, 0 );
++			if( index.data( ModelsRole ).toBool() ){
++				g_TexBro.m_treeView->setCurrentIndex( index );
++				break;
++			}
++		}
++		UpdateAssetModels();
++	}
++}
++
+ void TreeView_onRowActivated( const QModelIndex& index ){
++	if( index.data( ModelsRole ).toBool() ){
++		if( g_TexBro.m_assetPages->currentIndex() != 1 )
++			TextureBrowser_showModels();
++		return;
++	}
+ 	auto dirName = index.data( Qt::ItemDataRole::ToolTipRole ).toByteArray();
+ 	if( !dirName.isEmpty() ){ // empty = directory group root
++		if( g_TexBro.m_assetPages )
++			g_TexBro.m_assetPages->setCurrentIndex( 0 );
+ 		g_TexBro.m_searchedTags = false;
+ 
+ 		if ( !TextureBrowser::wads ) {
+@@ -1771,7 +1815,15 @@
+ 	auto *containerWidgetLeft = new QWidget; // Adding a QLayout to a QSplitter is not supported, use proxy widget
+ 	auto *containerWidgetRight = new QWidget; // Adding a QLayout to a QSplitter is not supported, use proxy widget
+ 	splitter->addWidget( containerWidgetLeft );
+-	splitter->addWidget( containerWidgetRight );
++	if( string_equal( g_pGameDescription->mGameFile.c_str(), "engine.game" ) ){
++		auto* pages = g_TexBro.m_assetPages = new QStackedWidget;
++		pages->addWidget( containerWidgetRight );
++		pages->addWidget( ModelBrowser_constructWindow( toplevel, true ) );
++		splitter->addWidget( pages );
++	}
++	else{
++		splitter->addWidget( containerWidgetRight );
++	}
+ 	auto *vbox = new QVBoxLayout( containerWidgetLeft );
+ 	auto *hbox = new QHBoxLayout( containerWidgetRight );
+ 
+@@ -1813,11 +1865,15 @@
+ 			g_TexBro.m_filter_string = text.toLatin1().constData();
+ 			g_TexBro.heightChanged();
+ 			g_TexBro.m_originInvalid = true;
++			UpdateAssetModels();
+ 		} );
+ 		QObject::connect( action, &QAction::triggered, GlobalToggles_find( "SearchFromStart" ).m_command.m_callback );
+ 	}
+ 	{	// Texture TreeView
+ 		TextureBrowser_createTreeViewTree();
++		if( g_TexBro.m_assetPages ){
++			QObject::connect( g_TexBro.m_treeView, &QTreeView::clicked, TreeView_onRowActivated );
++		}
+ 	}
+ 	{	// gl_widget
+ 		g_TexBro.m_gl_widget = new TexWndGLWidget( g_TexBro );
+@@ -1905,6 +1961,8 @@
+ 	ScopeDisableScreenUpdates disableScreenUpdates( "Processing...", "Loading Shaders" );
+ 	GlobalShaderSystem().refresh();
+ 	TextureBrowser_constructTreeStore(); /* texturebrowser tree update on vfs restart */
++	if( g_TexBro.m_assetPages && g_TexBro.m_assetPages->currentIndex() == 1 )
++		TextureBrowser_showModels();
+ 	UpdateAllWindows();
+ }
+ 
+@@ -1971,6 +2029,7 @@
+ 
+ void TextureBrowser_filter_searchFromStart(){
+ 	g_TextureBrowser_filter_searchFromStart ^= 1;
++	UpdateAssetModels();
+ 	g_TexBro.m_filter_searchFromStart_item.update();
+ 	TextureBrowser_activeShadersChanged( g_TexBro );
+ 	TextureBrowser_filterSetModeIcon( g_TexBro.m_filter_action );
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -715,7 +715,14 @@
+ QWidget* g_page_models;
+ 
+ void ModelBrowser_ToggleShow(){
+-	GroupDialog_showPage( g_page_models );
++	if( g_page_models == nullptr ){
++		if( g_page_textures != nullptr )
++			GroupDialog_showPage( g_page_textures );
++		TextureBrowser_showModels();
++	}
++	else{
++		GroupDialog_showPage( g_page_models );
++	}
+ }
+ 
+ QWidget* g_page_layers;
+@@ -1708,7 +1715,8 @@
+ 		g_page_textures = GroupDialog_addPage( "Textures", TextureBrowser_constructWindow( GroupDialog_getWindow() ), TextureBrowserExportTitleCaller() );
+ 	}
+ 
+-	g_page_models = GroupDialog_addPage( "Models", ModelBrowser_constructWindow( GroupDialog_getWindow() ), RawStringExportCaller( "Models" ) );
++	if( !string_equal( g_pGameDescription->mGameFile.c_str(), "engine.game" ) )
++		g_page_models = GroupDialog_addPage( "Models", ModelBrowser_constructWindow( GroupDialog_getWindow() ), RawStringExportCaller( "Models" ) );
+ 
+ 	g_page_layers = GroupDialog_addPage( "Layers", LayersBrowser_constructWindow( GroupDialog_getWindow() ), RawStringExportCaller( "Layers" ) );
+ 
