@@ -144,7 +144,7 @@ jobs:
         run: |
           set -euo pipefail
           patch=../integration/patches/context-menu-01.patch
-          printf '%s  %s\n' 41cded689ad9bf1f3dd1fee6c4356792bc75487fc179e86e0e9ce204d6fc952b "$patch" | sha256sum -c -
+          printf '%s  %s\n' 24f06dada3968aea1969075e73b50d48cc47cc10f8fd1faf7cd96c40081350f9 "$patch" | sha256sum -c -
           git -c core.autocrlf=false checkout-index --force -- radiant/entity.cpp radiant/entity.h radiant/select.cpp radiant/select.h radiant/xywindow.cpp radiant/xywindow.h
           git -c core.autocrlf=false apply --check --whitespace=error "$patch"
           git -c core.autocrlf=false apply --whitespace=error "$patch"
