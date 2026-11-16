@@ -1,0 +1,341 @@
+diff --git a/radiant/entity.cpp b/radiant/entity.cpp
+index 412ffaf..3263a5a 100644
+--- a/radiant/entity.cpp
++++ b/radiant/entity.cpp
+@@ -376,7 +376,7 @@ AABB Doom3Light_getBounds( const AABB& workzone ){
+ 
+ int g_iLastLightIntensity = 300;
+ 
+-void Entity_createFromSelection( const char* name, const Vector3& origin ){
++void Entity_createFromSelection( const char* name, const Vector3& origin, const char* markerName ){
+ #if 0
+ 	if ( string_equal_nocase( name, "worldspawn" ) ) {
+ 		qt_MessageBox( MainFrame_getWindow(), "Can't create an entity with worldspawn.", "info" );
+@@ -428,6 +428,8 @@ void Entity_createFromSelection( const char* name, const Vector3& origin ){
+ 	scene::Instance& instance = findInstance( entitypath );
+ 
+ 	Entity* entity = Node_getEntity( node );
++	if ( markerName != nullptr )
++		entity->setKeyValue( "name", markerName );
+ 
+ 	if ( entityClass->fixedsize || ( isModel && !brushesSelected ) ) {
+ 		//Select_Delete();
+diff --git a/radiant/entity.h b/radiant/entity.h
+index ac209ee..c61c3e0 100644
+--- a/radiant/entity.h
++++ b/radiant/entity.h
+@@ -23,7 +23,7 @@
+ 
+ #include "math/vectorfwd.h"
+ 
+-void Entity_createFromSelection( const char* name, const Vector3& origin );
++void Entity_createFromSelection( const char* name, const Vector3& origin, const char* markerName = nullptr );
+ 
+ void Scene_EntitySetKeyValue_Selected( const char* key, const char* value );
+ void Scene_EntitySetClassname_Selected( const char* classname );
+diff --git a/radiant/select.cpp b/radiant/select.cpp
+index 20d4846..f1dce3c 100644
+--- a/radiant/select.cpp
++++ b/radiant/select.cpp
+@@ -898,6 +898,10 @@ void Select_Inside(){
+ 	SelectByBounds<SelectionPolicy_Inside>::DoSelection();
+ }
+ 
++void Select_InsideKeepBounds(){
++	SelectByBounds<SelectionPolicy_Inside>::DoSelection( false );
++}
++
+ void Select_Touching(){
+ 	SelectByBounds<SelectionPolicy_Touching>::DoSelection( false );
+ }
+diff --git a/radiant/select.h b/radiant/select.h
+index 50af13e..a9b9be2 100644
+--- a/radiant/select.h
++++ b/radiant/select.h
+@@ -26,6 +26,7 @@
+ void Select_GetBounds( Vector3& mins, Vector3& maxs );
+ 
+ void Select_Delete();
++void Select_InsideKeepBounds();
+ void deleteSelection();
+ 
+ void Scene_BrushPatchSelectByShader( const char *shader );
+diff --git a/radiant/surfacedialog.cpp b/radiant/surfacedialog.cpp
+index 0b69bd1..7b25ff9 100644
+--- a/radiant/surfacedialog.cpp
++++ b/radiant/surfacedialog.cpp
+@@ -27,6 +27,8 @@
+ 
+ #include "surfacedialog.h"
+ 
++#include <QMenu>
++
+ #include "debugging/debugging.h"
+ 
+ #include "iscenegraph.h"
+@@ -957,41 +959,73 @@ void SurfaceInspector::BuildDialog(){
+ 	}
+ }
+ 
+-void SurfaceInspector::updateCollisionProperties(){
+-	if ( m_surfaceMaterial == nullptr )
+-		return;
+-
++namespace
++{
++struct RawFrontCollisionSelection
++{
+ 	const char* material = nullptr;
+ 	bool mixedMaterial = false;
+ 	int commonFlags = 7;
+ 	int anyFlags = 0;
++};
++
++RawFrontCollisionSelection rawFrontCollisionSelection(){
++	RawFrontCollisionSelection selection;
+ 	Scene_ForEachSelectedBrushFace( GlobalSceneGraph(), [&]( Face& face ){
+-		if ( material == nullptr )
+-			material = face.GetShader();
+-		else if ( !string_equal( material, face.GetShader() ) )
+-			mixedMaterial = true;
++		if ( selection.material == nullptr )
++			selection.material = face.GetShader();
++		else if ( !string_equal( selection.material, face.GetShader() ) )
++			selection.mixedMaterial = true;
+ 
+ 		ContentsFlagsValue flags;
+ 		face.GetFlags( flags );
+-		commonFlags &= flags.m_contentFlags;
+-		anyFlags |= flags.m_contentFlags;
++		selection.commonFlags &= flags.m_contentFlags;
++		selection.anyFlags |= flags.m_contentFlags;
+ 	} );
+-	const bool selected = material != nullptr;
++	return selection;
++}
++}
++
++void SurfaceInspector::updateCollisionProperties(){
++	if ( m_surfaceMaterial == nullptr )
++		return;
++
++	const auto selection = rawFrontCollisionSelection();
++	const bool selected = selection.material != nullptr;
+ 	m_surfaceMaterial->setText( !selected ? QStringLiteral( "Select brush faces" )
+-	                            : mixedMaterial ? QStringLiteral( "Mixed materials" )
+-	                            : QString::fromUtf8( material ) );
++	                            : selection.mixedMaterial ? QStringLiteral( "Mixed materials" )
++	                            : QString::fromUtf8( selection.material ) );
+ 	for ( int i = 0; i < 3; ++i ) {
+ 		const int bit = 1 << i;
+-		const bool mixed = selected && ( ( commonFlags ^ anyFlags ) & bit );
++		const bool mixed = selected && ( ( selection.commonFlags ^ selection.anyFlags ) & bit );
+ 		auto* check = m_collisionFlags[i];
+ 		check->setEnabled( selected );
+ 		check->setTristate( mixed );
+ 		check->setCheckState( mixed ? Qt::PartiallyChecked
+-		                     : selected && ( commonFlags & bit ) ? Qt::Checked
++		                     : selected && ( selection.commonFlags & bit ) ? Qt::Checked
+ 		                     : Qt::Unchecked );
+ 	}
+ }
+ 
++void SurfaceInspector_addCollisionMenuItems( QMenu& menu ){
++	const auto selection = rawFrontCollisionSelection();
++	const bool selected = selection.material != nullptr;
++	for ( int i = 0; i < 3; ++i ) {
++		const int bit = 1 << i;
++		const bool mixed = selected && ( ( selection.commonFlags ^ selection.anyFlags ) & bit );
++		QString label = QString::fromUtf8( rawFrontCollisionLabels[i] );
++		if ( mixed )
++			label += QStringLiteral( " (mixed)" );
++		auto* action = menu.addAction( label );
++		action->setCheckable( true );
++		action->setChecked( selected && ( selection.commonFlags & bit ) );
++		action->setEnabled( selected );
++		QObject::connect( action, &QAction::triggered, &menu, [bit]( bool checked ){
++			getSurfaceInspector().applyCollisionFlag( bit, checked );
++		} );
++	}
++}
++
+ void SurfaceInspector::applyCollisionFlag( int bit, bool enabled ){
+ 	if ( g_SelectedFaceInstances.empty() )
+ 		return;
+diff --git a/radiant/surfacedialog.h b/radiant/surfacedialog.h
+index f3ad872..d604830 100644
+--- a/radiant/surfacedialog.h
++++ b/radiant/surfacedialog.h
+@@ -28,6 +28,8 @@ void SurfaceInspector_Destroy();
+ void SurfaceInspector_constructWindow( class QWidget* widget );
+ void SurfaceInspector_destroyWindow();
+ 
++class QMenu;
++void SurfaceInspector_addCollisionMenuItems( QMenu& menu );
+ bool SelectedFaces_empty();
+ void SelectedFaces_copyTexture();
+ void SelectedFaces_pasteTexture();
+diff --git a/radiant/xywindow.cpp b/radiant/xywindow.cpp
+index c8ade9c..508e319 100644
+--- a/radiant/xywindow.cpp
++++ b/radiant/xywindow.cpp
+@@ -57,6 +57,7 @@
+ #include "gtkutil/fbo.h"
+ #include "gtkmisc.h"
+ #include "select.h"
++#include "surfacedialog.h"
+ #include "brushmanip.h"
+ #include "selection.h"
+ #include "entity.h"
+@@ -878,6 +879,107 @@ void XYWnd::OnContextMenu(){
+ 	m_mnuDrop->popup( QCursor::pos() );
+ }
+ 
++namespace
++{
++struct RawFrontEntityMenuItem
++{
++	const char* label;
++	const char* classname;
++};
++
++constexpr RawFrontEntityMenuItem rawFrontActors[][3] = {
++	{ { "Idle", "Actor_soldier_polish_idle" }, { "Crouch", "Actor_soldier_polish_crouch_idle" }, { "Prone", "Actor_soldier_polish_prone_idle" } },
++	{ { "Idle", "Actor_soldier_forest_idle" }, { "Crouch", "Actor_soldier_forest_crouch_idle" }, { "Prone", "Actor_soldier_forest_prone_idle" } }
++};
++
++constexpr RawFrontEntityMenuItem rawFrontDirectEntities[] = { { "Lamp", "lamp" }, { "Prop", "prop" } };
++constexpr RawFrontEntityMenuItem rawFrontOtherEntities[] = { { "Marker", "marker" }, { "Part", "part" }, { "Trigger", "trigger" } };
++
++class RawFrontAdditionalEntityVisitor : public EntityClassVisitor
++{
++	QMenu& m_menu;
++	XYWnd& m_view;
++public:
++	RawFrontAdditionalEntityVisitor( QMenu& menu, XYWnd& view ) : m_menu( menu ), m_view( view ){
++	}
++	void visit( EntityClass* entityClass ) override {
++		const char* name = entityClass->name();
++		if ( string_equal( name, "Spawn" ) )
++			return; // The Spawn submenu creates native RawFront markers.
++		for ( const auto& actors : rawFrontActors )
++			for ( const auto& actor : actors )
++				if ( string_equal( name, actor.classname ) )
++					return;
++		for ( const auto& item : rawFrontDirectEntities )
++			if ( string_equal( name, item.classname ) )
++				return;
++		for ( const auto& item : rawFrontOtherEntities )
++			if ( string_equal( name, item.classname ) )
++				return;
++
++		const QByteArray classname( name );
++		m_menu.addAction( name, &m_menu, [view = &m_view, classname](){
++			view->OnEntityCreate( classname.constData() );
++		} );
++	}
++};
++}
++
++void XYWnd::OnRawFrontContextMenu(){
++	QMenu menu( MainFrame_getWindow() );
++	g_entityCreationOffset = 0;
++	const bool hasSelection = GlobalSelectionSystem().countSelected() != 0;
++
++	auto* select = menu.addMenu( "Select" );
++	select->addAction( "Select All Inside", Select_InsideKeepBounds )->setEnabled( hasSelection );
++
++	const auto addCommand = []( QMenu* submenu, const char* label, const char* command ){
++		return submenu->addAction( label, submenu, [command](){
++			GlobalCommands_find( command ).m_callback();
++		} );
++	};
++	auto* prefab = menu.addMenu( "Prefab" );
++	addCommand( prefab, "Insert Prefab…", "ImportMap" );
++	addCommand( prefab, "Save Selection as Prefab…", "SaveSelected" )->setEnabled( hasSelection );
++
++	auto* geometry = menu.addMenu( "Geometry" );
++	addCommand( geometry, "Make Structural", "MakeStructural" )->setEnabled( hasSelection );
++	addCommand( geometry, "Make Detail", "MakeDetail" )->setEnabled( hasSelection );
++
++	SurfaceInspector_addCollisionMenuItems( *menu.addMenu( "Surface Properties" ) );
++	menu.addSeparator();
++
++	const auto addEntity = [this]( QMenu* submenu, const RawFrontEntityMenuItem& item ){
++		submenu->addAction( item.label, submenu, [this, classname = item.classname](){
++			OnEntityCreate( classname );
++		} );
++	};
++	auto* actor = menu.addMenu( "Actor" );
++	auto* polish = actor->addMenu( "Polish" );
++	auto* forest = actor->addMenu( "Forest" );
++	for ( const auto& item : rawFrontActors[0] )
++		addEntity( polish, item );
++	for ( const auto& item : rawFrontActors[1] )
++		addEntity( forest, item );
++
++	auto* spawn = menu.addMenu( "Spawn" );
++	constexpr RawFrontEntityMenuItem markers[] = { { "General", "spawn" }, { "Side A", "sd_a" }, { "Side B", "sd_b" }, { "Zombie", "zombie_spawn" } };
++	for ( const auto& marker : markers )
++		spawn->addAction( marker.label, spawn, [this, name = marker.classname](){
++			OnEntityCreate( "marker", name );
++		} );
++
++	for ( const auto& item : rawFrontDirectEntities )
++		addEntity( &menu, item );
++	auto* entities = menu.addMenu( "Entities" );
++	for ( const auto& item : rawFrontOtherEntities )
++		addEntity( entities, item );
++	RawFrontAdditionalEntityVisitor additionalEntities( *entities, *this );
++	GlobalEntityClassManager().forEach( additionalEntities );
++
++	menu.exec( QCursor::pos() );
++}
++
+ static FreezePointer g_xywnd_freezePointer;
+ 
+ unsigned int Move_buttons(){
+@@ -1077,7 +1179,10 @@ void XYWnd::EntityCreate_MouseMove( int x, int y ){
+ void XYWnd::EntityCreate_MouseUp( int x, int y ){
+ 	if ( m_entityCreate ) {
+ 		m_entityCreate = false;
+-		OnContextMenu();
++		if ( string_equal( g_pGameDescription->getKeyValue( "basegame" ), "rawfront" ) )
++			OnRawFrontContextMenu();
++		else
++			OnContextMenu();
+ 	}
+ }
+ 
+@@ -1921,7 +2026,7 @@ void XYWnd_MouseToPoint( XYWnd* xywnd, int x, int y, Vector3& point ){
+ 	point[nDim] = float_snapped( fWorkMid, GetGridSize() );
+ }
+ 
+-void XYWnd::OnEntityCreate( const char* item ){
++void XYWnd::OnEntityCreate( const char* item, const char* markerName ){
+ 	Vector3 point;
+ 	XYWnd_MouseToPoint( this, m_entityCreate_x, m_entityCreate_y, point );
+ 
+@@ -1930,7 +2035,7 @@ void XYWnd::OnEntityCreate( const char* item ){
+ 	point += g_vector3_axes[nDim1] * offset;
+ 	(void)nDim2;
+ 
+-	Entity_createFromSelection( item, point );
++	Entity_createFromSelection( item, point, markerName );
+ }
+ 
+ 
+diff --git a/radiant/xywindow.h b/radiant/xywindow.h
+index 07f66e4..af6490e 100644
+--- a/radiant/xywindow.h
++++ b/radiant/xywindow.h
+@@ -218,7 +218,8 @@ public:
+ 	void EntityCreate_MouseMove( int x, int y );
+ 	void EntityCreate_MouseUp( int x, int y );
+ 
+-	void OnEntityCreate( const char* item );
++	void OnEntityCreate( const char* item, const char* markerName = nullptr );
++	void OnRawFrontContextMenu();
+ 	VIEWTYPE GetViewType() const {
+ 		return m_viewType;
+ 	}
