@@ -1,0 +1,73 @@
+diff --git a/radiant/mainframe.cpp b/radiant/mainframe.cpp
+index f8d4a30..e7d91ca 100644
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -954,7 +954,7 @@ void create_view_menu( QMenuBar *menubar, MainFrame::EViewStyle style ){
+ 		create_menu_item_with_mnemonic( menu, "Texture Browser", "ToggleTextures" );
+ 	}
+ 	create_menu_item_with_mnemonic( menu, "Model Browser", "ToggleModelBrowser" );
+-	create_menu_item_with_mnemonic( menu, "Entity Inspector", "ShowEntityInspector" );
++	create_menu_item_with_mnemonic( menu, "Entity Inspector", "ToggleEntityInspector" );
+ 	create_menu_item_with_mnemonic( menu, "Layers Browser", "ToggleLayersBrowser" );
+ 	create_menu_item_with_mnemonic( menu, "&Surface Inspector", "SurfaceInspector" );
+ 	create_menu_item_with_mnemonic( menu, "Entity List", "ToggleEntityList" );
+@@ -1308,7 +1308,6 @@ void TexBro_registerShortcuts(){
+ }
+ 
+ void Misc_registerShortcuts(){
+-	command_connect_accelerator( "ToggleEntityInspector" );
+ 	command_connect_accelerator( "Redo2" );
+ 	command_connect_accelerator( "UnSelectSelection2" );
+ 	command_connect_accelerator( "DeleteSelection2" );
+@@ -1440,7 +1439,7 @@ void create_main_toolbar( QToolBar *toolbar,  MainFrame::EViewStyle style ){
+ 	toolbar_append_toggle_button( toolbar, "Texture Vertex Lock", "texture_vertexlock.png", "TogTexVertexLock" );
+ 	toolbar_append_separator( toolbar );
+ 
+-	toolbar_append_button( toolbar, "Entities", "entities.png", "ShowEntityInspector" );
++	toolbar_append_button( toolbar, "Entities", "entities.png", "ToggleEntityInspector" );
+ 	// disable the console and texture button in the regular layouts
+ 	if ( style != MainFrame::eRegular && style != MainFrame::eRegularLeft ) {
+ 		toolbar_append_button( toolbar, "Console", "console.png", "ToggleConsole" );
+@@ -2092,11 +2091,7 @@ void MainFrame_Construct(){
+ 	GlobalCommands_insert( "Preferences", makeCallbackF( PreferencesDialog_showDialog ), QKeySequence( "P" ) );
+ 
+ 	GlobalCommands_insert( "ToggleConsole", makeCallbackF( Console_ToggleShow ), QKeySequence( "O" ) );
+-	GlobalCommands_insert( "ShowEntityInspector", makeCallbackF( EntityInspector_ToggleShow ) );
+-	GlobalCommands_insert( "ToggleEntityInspector", makeCallbackF( +[](){
+-		if ( !SurfaceProperties_showForSelectedFaces() )
+-			EntityInspector_ToggleShow();
+-	} ), QKeySequence( "N" ) );
++	GlobalCommands_insert( "ToggleEntityInspector", makeCallbackF( EntityInspector_ToggleShow ), QKeySequence( "N" ) );
+ 	GlobalCommands_insert( "ToggleModelBrowser", makeCallbackF( ModelBrowser_ToggleShow ), QKeySequence( "/" ) );
+ 	GlobalCommands_insert( "ToggleLayersBrowser", makeCallbackF( LayersBrowser_ToggleShow ), QKeySequence( "L" ) );
+ 	GlobalCommands_insert( "ToggleEntityList", makeCallbackF( EntityList_toggleShown ), QKeySequence( "Shift+L" ) );
+diff --git a/radiant/surfacedialog.cpp b/radiant/surfacedialog.cpp
+index 31b3293..0b69bd1 100644
+--- a/radiant/surfacedialog.cpp
++++ b/radiant/surfacedialog.cpp
+@@ -360,13 +360,6 @@ void DoSurface(){
+ 	getSurfaceInspector().ShowDlg();
+ }
+ 
+-bool SurfaceProperties_showForSelectedFaces(){
+-	if ( !RawFrontSurfaceProperties_enabled() || g_SelectedFaceInstances.empty() )
+-		return false;
+-	DoSurface();
+-	return true;
+-}
+-
+ void SurfaceInspector_toggleShown(){
+ 	if ( getSurfaceInspector().visible() ) {
+ 		getSurfaceInspector().HideDlg();
+diff --git a/radiant/surfacedialog.h b/radiant/surfacedialog.h
+index 3eb7c83..f3ad872 100644
+--- a/radiant/surfacedialog.h
++++ b/radiant/surfacedialog.h
+@@ -28,7 +28,6 @@ void SurfaceInspector_Destroy();
+ void SurfaceInspector_constructWindow( class QWidget* widget );
+ void SurfaceInspector_destroyWindow();
+ 
+-bool SurfaceProperties_showForSelectedFaces();
+ bool SelectedFaces_empty();
+ void SelectedFaces_copyTexture();
+ void SelectedFaces_pasteTexture();
