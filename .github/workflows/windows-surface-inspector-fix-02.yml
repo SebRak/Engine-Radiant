@@ -1,0 +1,190 @@
+name: Windows x64 Surface Inspector Fix 02
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-surface-inspector-fix-02:
+    runs-on: windows-2022
+    timeout-minutes: 45
+    env:
+      UPSTREAM_SHA: 68ecbed64b7be78741878c730279b5471d978c7c
+      PACKAGE: RawFront-Radiant-0.4-surface-inspector-fix-02-win64.zip
+
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Check out integration patches
+        uses: actions/checkout@v4
+        with:
+          path: integration
+          persist-credentials: false
+
+      - name: Set up MSYS2 MINGW64
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          path-type: minimal
+          update: false
+          release: false
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-svg
+            mingw-w64-x86_64-assimp
+            mingw-w64-x86_64-libxml2
+            mingw-w64-x86_64-glib2
+            mingw-w64-x86_64-libpng
+            mingw-w64-x86_64-libjpeg-turbo
+            mingw-w64-x86_64-zlib
+            git unzip p7zip
+
+      - name: Check out reference source
+        uses: actions/checkout@v4
+        with:
+          repository: Garux/netradiant-custom
+          ref: ${{ env.UPSTREAM_SHA }}
+          path: upstream
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Verify and apply Navigation 01
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$UPSTREAM_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          patch=../integration/patches/navigation-01.patch
+          printf '%s  %s\n' f3680081f67e353cd291f9572760239f52e0b2018df9417aa4eecfc37242fa3a "$patch" | sha256sum -c -
+          git -c core.autocrlf=false checkout-index --force -- radiant/camwindow.cpp
+          git -c core.autocrlf=false apply --check "$patch"
+          git -c core.autocrlf=false apply "$patch"
+          test "$(git diff --name-only HEAD)" = radiant/camwindow.cpp
+          git diff --check HEAD
+          mkdir -p ../dist
+          git diff --binary HEAD > ../dist/navigation-01-applied.patch
+          cp "$patch" ../dist/navigation-01.patch
+
+      - name: Verify and apply Play 02
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          patch=../integration/patches/play-02.patch
+          printf '%s  %s\n' f59e7d0d04e9d49646c759ad8420f82c76cc92ed74b7a487ecf261fd9c3ea93c "$patch" | sha256sum -c -
+          git -c core.autocrlf=false checkout-index --force -- libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/mainframe.cpp radiant/map.cpp radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp radiant/referencecache.h
+          git -c core.autocrlf=false apply --check "$patch"
+          git -c core.autocrlf=false apply "$patch"
+          test "$(git diff --name-only HEAD | paste -sd ' ')" = "libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/camwindow.cpp radiant/mainframe.cpp radiant/map.cpp radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp radiant/referencecache.h"
+          git diff --check HEAD
+          git diff --binary HEAD > ../dist/play-02-applied.patch
+          cp "$patch" ../dist/play-02.patch
+
+      - name: Verify and apply Unified Asset Browser 02
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          patch=../integration/patches/assets-02.patch
+          printf '%s  %s\n' 49c617df85f3e3bb9aedd680bd72961016fffb0bd2deceb646970808e22d667e "$patch" | sha256sum -c -
+          git -c core.autocrlf=false checkout-index --force -- radiant/modelwindow.cpp radiant/modelwindow.h radiant/texwindow.cpp radiant/texwindow.h
+          git -c core.autocrlf=false apply --check "$patch"
+          git -c core.autocrlf=false apply "$patch"
+          test "$(git diff --name-only HEAD | paste -sd ' ')" = "libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/camwindow.cpp radiant/mainframe.cpp radiant/map.cpp radiant/modelwindow.cpp radiant/modelwindow.h radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp radiant/referencecache.h radiant/texwindow.cpp radiant/texwindow.h"
+          git diff --check HEAD
+          git diff --binary HEAD > ../dist/assets-02-applied.patch
+          cp "$patch" ../dist/assets-02.patch
+
+      - name: Verify and apply Surface Properties 01
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          patch=../integration/patches/surface-properties-01.patch
+          printf '%s  %s\n' 58470795b37e0fd88301d603f8be6aea50a588f1cfa6fb5becccb05cd1b480a1 "$patch" | sha256sum -c -
+          git -c core.autocrlf=false checkout-index --force -- radiant/surfacedialog.cpp radiant/surfacedialog.h
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
+          test "$(git diff --name-only HEAD | paste -sd ' ')" = "libs/stream/textfilestream.h radiant/build.cpp radiant/build.h radiant/camwindow.cpp radiant/mainframe.cpp radiant/map.cpp radiant/modelwindow.cpp radiant/modelwindow.h radiant/qe3.cpp radiant/qe3.h radiant/referencecache.cpp radiant/referencecache.h radiant/surfacedialog.cpp radiant/surfacedialog.h radiant/texwindow.cpp radiant/texwindow.h"
+          git diff --check HEAD
+          git diff --binary HEAD > ../dist/surface-properties-01-applied.patch
+          cp "$patch" ../dist/
+
+      - name: Verify and apply Surface Properties 01 Fix 01
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          patch=../integration/patches/surface-properties-01-fix-01.patch
+          printf '%s  %s\n' 60f762f9d61f27077d03efed7fa81322f7ed1a5c51d3602336064315a5c1dd12 "$patch" | sha256sum -c -
+          test "$(git apply --numstat "$patch" | cut -f3)" = radiant/mainframe.cpp
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
+          git diff --check HEAD
+          git diff --binary HEAD > ../dist/surface-properties-01-fix-01-applied.patch
+          cp "$patch" ../dist/
+
+      - name: Verify and apply Surface Inspector Fix 02
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          patch=../integration/patches/surface-inspector-fix-02.patch
+          printf '%s  %s\n' d290f1f5466bf8ad50f5162010cba866f2e1d19e0cc5b907f93c1033edf8743c "$patch" | sha256sum -c -
+          test "$(git apply --numstat "$patch" | cut -f3 | paste -sd ' ')" = "radiant/mainframe.cpp radiant/surfacedialog.cpp radiant/surfacedialog.h"
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
+          git diff --check HEAD
+          git diff --binary HEAD > ../dist/surface-inspector-fix-02-applied.patch
+          cp "$patch" ../dist/
+
+      - name: Build Surface Inspector Fix 02
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$UPSTREAM_SHA"
+          test "$MSYSTEM" = MINGW64
+          test "$(g++ -dumpmachine)" = x86_64-w64-mingw32
+          mkdir -p ../dist
+          pacman -Q > ../dist/packages.txt
+          make MAKEFILE_CONF=msys2-Makefile.conf BUILD=release CXXFLAGS="-include cstdint" -j4 2>&1 | tee ../dist/build.log
+          git diff --binary HEAD | cmp - ../dist/surface-inspector-fix-02-applied.patch
+          sha256sum install/radiant.exe > ../dist/radiant.exe.sha256
+
+      - name: Verify and package
+        working-directory: upstream
+        run: |
+          set -euo pipefail
+          mkdir -p install/settings install/licenses
+          cp LICENSE GPL LGPL install/licenses/
+          printf '%s\n' "NetRadiant-Custom $UPSTREAM_SHA" \
+            "https://github.com/Garux/netradiant-custom/tree/$UPSTREAM_SHA" \
+            "Windows x64 / MSYS2 MINGW64 / Release / Navigation 01 + Play 02 + Unified Asset Browser 02 + Surface Properties 01 + Surface Inspector Fix 02" > install/BUILD-INFO.txt
+          cp ../dist/packages.txt install/
+          for f in radiant.exe q3map2.exe q2map.exe qdata3.exe h2data.exe mbspc.exe \
+            Qt5Core.dll Qt5Gui.dll Qt5Widgets.dll Qt5Svg.dll \
+            modules/mapq3.dll modules/imagepng.dll modules/assmodel.dll plugins/brushexport.dll; do
+            test -s "install/$f"
+            objdump -f "install/$f" | grep 'file format pei-x86-64'
+          done
+          test -n "$(find install -name qwindows.dll -print -quit)"
+          find install/gamepacks/games -name '*.game' | grep -v '^$' > ../dist/gamepacks.txt
+          git archive --format=zip --prefix=netradiant-custom/ -o "../dist/NetRadiant-Custom-${UPSTREAM_SHA}.source.zip" HEAD
+          (cd install && 7z a -tzip "../../dist/$PACKAGE" . && 7z t "../../dist/$PACKAGE")
+          (cd ../dist && sha256sum "$PACKAGE" > "$PACKAGE.sha256")
+
+      - name: Upload Surface Inspector Fix 02 build
+        uses: actions/upload-artifact@v4
+        with:
+          name: RawFront-Radiant-0.4-surface-inspector-fix-02-win64
+          path: dist/
+          if-no-files-found: error
+
+      - name: Preserve failed build log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Windows-surface-inspector-fix-02-diagnostics
+          path: dist/
+          if-no-files-found: ignore
