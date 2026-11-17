@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<classes>
+<point name="Actor_soldier_polish_idle" color="0.2 0.8 1" box="-17.9888 -22.4296 0.0000 12.6690 13.6822 70.1146" model="actors/soldier_polish/idle.gltf">Editor preview only.</point>
+<point name="Actor_soldier_polish_crouch_idle" color="0.2 0.8 1" box="-17.8405 -24.5863 0.0000 12.2486 20.0378 52.0817" model="actors/soldier_polish/crouch_idle.gltf">Editor preview only.</point>
+<point name="Actor_soldier_polish_prone_idle" color="0.2 0.8 1" box="-27.1694 -25.8997 0.0000 13.5298 47.2729 27.6053" model="actors/soldier_polish/prone_idle.gltf">Editor preview only.</point>
+<point name="Actor_soldier_forest_idle" color="0.2 0.8 1" box="-15.2409 -23.0148 0.0000 10.2131 12.7767 72.8894" model="actors/soldier_forest/idle.gltf">Editor preview only.</point>
+<point name="Actor_soldier_forest_crouch_idle" color="0.2 0.8 1" box="-17.6603 -26.1690 0.0000 10.4730 21.6210 52.8839" model="actors/soldier_forest/crouch_idle.gltf">Editor preview only.</point>
+<point name="Actor_soldier_forest_prone_idle" color="0.2 0.8 1" box="-25.8361 -26.9087 0.0000 13.8181 47.6434 22.3955" model="actors/soldier_forest/prone_idle.gltf">Editor preview only.</point>
+<point name="Spawn" color="1 0.75 0.15" box="-8 -8 -8 8 8 8">Player spawn. Play exports this to a RawFront marker named spawn.</point>
+</classes>

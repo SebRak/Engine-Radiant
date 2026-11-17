@@ -1,0 +1,5253 @@
+{
+  "map_count": 25,
+  "primitives": {
+    "mesh": 42738,
+    "curve": 205
+  },
+  "entity_classes": {
+    "worldspawn": 25,
+    "trigger_use_touch": 288,
+    "mp_tdm_spawn": 113,
+    "misc_model": 7350,
+    "light": 701,
+    "script_origin": 996,
+    "mp_global_intermission": 23,
+    "mp_ctf_spawn_allied": 79,
+    "script_model": 70,
+    "script_brushmodel": 1574,
+    "trigger_damage": 1504,
+    "mp_dm_spawn": 148,
+    "node_cover_right": 233,
+    "node_cover_left": 227,
+    "info_grenade_hint": 19,
+    "node_pathnode": 1213,
+    "trigger_multiple": 348,
+    "node_cover_crouch_window": 80,
+    "info_null": 79,
+    "misc_prefab": 935,
+    "func_group": 628,
+    "info_player_start": 2,
+    "mp_ctf_spawn_axis": 46,
+    "misc_turret": 23,
+    "mp_sd_spawn_attacker": 20,
+    "mp_sd_spawn_defender": 20,
+    "trigger_hurt": 1,
+    "weapon_luger_mp": 2,
+    "actor_ally_ranger_nrmdy_reg_garand": 1,
+    "actor_ally_ranger_nrmdy_randall": 1,
+    "actor_ally_ranger_nrmdy_reg_sniper": 2,
+    "actor_ally_brit_normandy_reg_pfaust": 1,
+    "node_cover_stand": 323,
+    "node_cover_crouch": 94,
+    "node_concealment_crouch": 78,
+    "node_turret": 2,
+    "node_cover_prone": 11,
+    "node_concealment_stand": 13,
+    "actor_axis_nrmdy_wehr_reg_G43": 31,
+    "actor_axis_nrmdy_wehr_reg_kar98": 63,
+    "actor_axis_nrmdy_wehr_reg_mp44": 36,
+    "actor_axis_nrmdy_wehr_reg_mp40": 103,
+    "actor_axis_nrmdy_wehr_reg_mg42portable": 4,
+    "node_concealment_prone": 23,
+    "actor_ally_brit_normandy_reg_sten": 4,
+    "info_volume": 11,
+    "actor_ally_brit_normandy_reg_bren": 2,
+    "actor_ally_brit_normandy_reg_rifle": 7,
+    "actor_ally_brit_normandy_price": 1,
+    "script_vehicle": 5,
+    "info_vehicle_node": 43,
+    "info_vehicle_node_rotate": 63,
+    "trigger_radius": 3
+  },
+  "surface_directives": {
+    "contents nonColliding": 990,
+    "contents detail": 949,
+    "contents weaponClip": 15,
+    "toolFlags splitGeo": 19
+  },
+  "rawfront_textures": [
+    "materials/asphalt",
+    "materials/asphalt_worn",
+    "materials/bricks",
+    "materials/concrete",
+    "materials/container_sheet",
+    "materials/corrugated",
+    "materials/dirt",
+    "materials/fence_posts",
+    "materials/fence_wire",
+    "materials/gravel_concrete",
+    "materials/green_metal",
+    "materials/grid",
+    "materials/metal",
+    "materials/shutter",
+    "materials/tiles",
+    "materials/wood",
+    "tools/clip",
+    "tools/clip_asphalt",
+    "tools/clip_bark",
+    "tools/clip_brick",
+    "tools/clip_carpet",
+    "tools/clip_ceramic",
+    "tools/clip_cloth",
+    "tools/clip_concrete",
+    "tools/clip_dirt",
+    "tools/clip_flesh",
+    "tools/clip_foliage",
+    "tools/clip_glass",
+    "tools/clip_grass",
+    "tools/clip_gravel",
+    "tools/clip_ice",
+    "tools/clip_metal",
+    "tools/clip_mud",
+    "tools/clip_paper",
+    "tools/clip_plaster",
+    "tools/clip_plastic",
+    "tools/clip_rock",
+    "tools/clip_sand",
+    "tools/clip_snow",
+    "tools/clip_water",
+    "tools/clip_wood",
+    "tools/origin",
+    "tools/trigger"
+  ],
+  "rawfront_models": [
+    "actors/soldier_forest/crouch_idle.gltf",
+    "actors/soldier_forest/idle.gltf",
+    "actors/soldier_forest/prone_idle.gltf",
+    "actors/soldier_forest/soldier_forest.gltf",
+    "actors/soldier_polish/crouch_idle.gltf",
+    "actors/soldier_polish/idle.gltf",
+    "actors/soldier_polish/prone_idle.gltf",
+    "actors/soldier_polish/soldier_polish.gltf",
+    "props/air_conditioner/air_conditioner.gltf",
+    "props/air_conditioner_clean/air_conditioner_clean.gltf",
+    "props/barrel/barrel.gltf",
+    "props/bomb/bomb.gltf",
+    "props/bulk_bag/bulk_bag.gltf",
+    "props/cardboard_box/cardboard_box.gltf",
+    "props/crates/crates.gltf",
+    "props/dumpster/dumpster.gltf",
+    "props/generator/generator.gltf",
+    "props/jersey_barrier/jersey_barrier.gltf",
+    "props/jersey_barrier_02/jersey_barrier_02.gltf",
+    "props/oil_drum/oil_drum.gltf",
+    "props/oil_drums/oil_drums.gltf",
+    "props/pallet/pallet.gltf",
+    "props/pallet_boxes/pallet_boxes.gltf",
+    "props/security_camera/security_camera.gltf",
+    "props/shipping_container/closed_10_metre.gltf",
+    "props/shipping_container/closed_20_foot.gltf",
+    "props/shipping_container/closed_40_foot.gltf",
+    "props/shipping_container/closed_40_foot_rusty.gltf",
+    "props/shipping_container/closed_8_5_metre.gltf",
+    "props/shipping_container/closed_9_metre.gltf",
+    "props/shipping_container/open_8_6_metre.gltf",
+    "props/shipping_container/open_9_metre.gltf",
+    "props/shipping_container/open_through_8_5_metre.gltf",
+    "props/torch/torch.gltf",
+    "props/trash_can/trash_can.gltf",
+    "props/trash_can_clean/trash_can_clean.gltf",
+    "props/utility_box/utility_box.gltf",
+    "props/van/van.gltf"
+  ],
+  "materials": [
+    {
+      "source": "caulk",
+      "references": 16518,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "toujane_largedoor1",
+      "references": 13829,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "clip_player",
+      "references": 11107,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "trigger",
+      "references": 10960,
+      "status": "technical-candidate",
+      "targets": [
+        "tools/trigger"
+      ]
+    },
+    {
+      "source": "duhoc_concrete_stripe2",
+      "references": 10854,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "clip_nosight_novehicle",
+      "references": 9558,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "clip",
+      "references": 7081,
+      "status": "technical-candidate",
+      "targets": [
+        "tools/clip"
+      ]
+    },
+    {
+      "source": "clip_nosight",
+      "references": 5902,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_chimneybrick02",
+      "references": 4051,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "v_plasterwall02",
+      "references": 3794,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_stand_1",
+      "references": 3319,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "clip_foliage",
+      "references": 3209,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "clip_ai",
+      "references": 2561,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_woodtrim01",
+      "references": 2435,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "pentagram",
+      "references": 2392,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_concrete_exteriorbunker1_top",
+      "references": 2027,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "test_concrete",
+      "references": 1869,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "stalingradwinter_brick02",
+      "references": 1755,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "dawnville2_concrete_floor01",
+      "references": 1680,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_wood_01",
+      "references": 1424,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_floor_int_stone_01",
+      "references": 1338,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_ext_01",
+      "references": 1283,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_brick01",
+      "references": 1270,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "mtl_caen_trim_woodworn_01",
+      "references": 1249,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_stonetrim01",
+      "references": 1200,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_darkstain08",
+      "references": 1192,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_concrete_exteriorbunker1",
+      "references": 1186,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "duhoc_asphalt_road",
+      "references": 1182,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/asphalt"
+      ]
+    },
+    {
+      "source": "v_stonetrim04",
+      "references": 1159,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_rustbar_trim02",
+      "references": 1148,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "portal_nodraw",
+      "references": 1060,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_ext_01_01",
+      "references": 1026,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_brick01",
+      "references": 972,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "egypt_plaster_stucco1",
+      "references": 962,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonewall04",
+      "references": 960,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "clip_nosight_rock",
+      "references": 886,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_windowtrim01",
+      "references": 876,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_snow01",
+      "references": 865,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_churchstone_01",
+      "references": 849,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "clip_nosight_metal",
+      "references": 817,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "clip_nosight_nothing",
+      "references": 795,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "toujane_dirt_walltrim_dark",
+      "references": 759,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "stalingradwinter_concretetrim01",
+      "references": 700,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_shutter_01",
+      "references": 690,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "clip_nosight_dirt",
+      "references": 665,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "egypt_trench_ground_dirt",
+      "references": 648,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "mtl_hill400_wall_ext_05",
+      "references": 646,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonetrim06",
+      "references": 633,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonewall01",
+      "references": 609,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_dessertrock_01_night",
+      "references": 604,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_darkstain02",
+      "references": 597,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_stain_plasterwall_02",
+      "references": 594,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingrad_stone_core02",
+      "references": 590,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodtrim03",
+      "references": 579,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "duhoc_stone_wall",
+      "references": 563,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_pipe_b",
+      "references": 553,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wood_step_top01",
+      "references": 540,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "aitrig",
+      "references": 537,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_concrete_multi",
+      "references": 518,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "toujane_metal_pipe1",
+      "references": 506,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "dawnville2_wood_floor01",
+      "references": 496,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "stalingradwinter_trench_wall",
+      "references": 486,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_window04",
+      "references": 482,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_darkstain03",
+      "references": 481,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mantle_over",
+      "references": 480,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_trim_ext_plaster_01",
+      "references": 473,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_concrete_floor4",
+      "references": 451,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_church_02",
+      "references": 438,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonetrim05",
+      "references": 434,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_grass",
+      "references": 424,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_snow02128b",
+      "references": 419,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_block_wall1",
+      "references": 411,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_roof",
+      "references": 403,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_dirt_ground4",
+      "references": 399,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "holiday_color_lights",
+      "references": 387,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_wood_floor",
+      "references": 386,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_floor_int_church_01",
+      "references": 385,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "nodraw_decal",
+      "references": 385,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_ceiling_04",
+      "references": 378,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_rustbar_trim01",
+      "references": 368,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_darkstain01",
+      "references": 367,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonewall03",
+      "references": 358,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_wood_fence02",
+      "references": 346,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "escort",
+      "references": 337,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_concrete06",
+      "references": 319,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "spawner_trigger",
+      "references": 318,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_ceiling2",
+      "references": 309,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_corewalll01",
+      "references": 301,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_fullgrass_01",
+      "references": 298,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_asphalt",
+      "references": 298,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/asphalt"
+      ]
+    },
+    {
+      "source": "mtl_caen_grass_01",
+      "references": 295,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_concrete_side",
+      "references": 290,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_wallpaper01",
+      "references": 288,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_core_floor01",
+      "references": 288,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodwall",
+      "references": 280,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_03",
+      "references": 278,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_512tile_stone_01",
+      "references": 264,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "v_mud_blend",
+      "references": 262,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_ground1",
+      "references": 259,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "kill",
+      "references": 258,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_stair1_run",
+      "references": 255,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case1024brown2",
+      "references": 248,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "clip_snow",
+      "references": 247,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_pipe_a",
+      "references": 229,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_windowtrim02",
+      "references": 229,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodtrim02",
+      "references": 227,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "stalingradwinter_concrete01",
+      "references": 226,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_plaster_01",
+      "references": 223,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "bcs",
+      "references": 223,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wood_step_rise01",
+      "references": 217,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "stalingradwinter_burnt_window02_decal",
+      "references": 215,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_silo_metal_02",
+      "references": 215,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "sky_newvillers",
+      "references": 206,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "portal",
+      "references": 206,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_wall_grime04_blend",
+      "references": 202,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_ext_brick_02",
+      "references": 190,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "egypt_plaster_exteriorwall01_body",
+      "references": 187,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mantle_on",
+      "references": 187,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "ambient",
+      "references": 187,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_dirt_ground3",
+      "references": 184,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "hill400_dirt01",
+      "references": 184,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "egypt_plaster_exteriorwall02",
+      "references": 184,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_int_wallpaper_03",
+      "references": 181,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_ground3",
+      "references": 181,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_floor_church01",
+      "references": 178,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_metal_broken_generic1",
+      "references": 178,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "mtl_caen_black",
+      "references": 176,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_wood_floor1",
+      "references": 174,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "holiday_icicle_lights",
+      "references": 171,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case1024blue",
+      "references": 171,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_window02",
+      "references": 168,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case1024blue3",
+      "references": 168,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wallpaper02",
+      "references": 164,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case1024grey2",
+      "references": 164,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_wall_ext_06",
+      "references": 163,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wallpaper07",
+      "references": 157,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stopspawn",
+      "references": 156,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wallpaper04",
+      "references": 154,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_door_wide07",
+      "references": 154,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case1024red",
+      "references": 154,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_concrete_btmtrim01",
+      "references": 151,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "egypt_brick_sand_generic1_body1",
+      "references": 149,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "case1024green2",
+      "references": 148,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_trim_int_worn_wood_02",
+      "references": 146,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "stalingradwinter_trim01",
+      "references": 144,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_door_wide06",
+      "references": 144,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodfloor01",
+      "references": 139,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "sky_decoytown",
+      "references": 139,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_wood_step_top",
+      "references": 135,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "sky_88ridge",
+      "references": 127,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_mud",
+      "references": 127,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_dirt_ground5",
+      "references": 125,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "v_roof02",
+      "references": 120,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_metal_shelter1",
+      "references": 120,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "stalingradwinter_wall_grime04_decal",
+      "references": 119,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "test_sky",
+      "references": 117,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "duhoc_grass_green3",
+      "references": 116,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_fireplace01",
+      "references": 110,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "d_beachsand",
+      "references": 107,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_chimney01",
+      "references": 106,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_snow02",
+      "references": 106,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_facade_01",
+      "references": 106,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "aachainlinkfnce",
+      "references": 105,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_grass_blend_01",
+      "references": 105,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_woodtrim5",
+      "references": 105,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "stalingradwinter_brick04",
+      "references": 102,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_int_church_03",
+      "references": 101,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonetrim03",
+      "references": 99,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_floor_int_02_01",
+      "references": 98,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_corrugated_sheetmetal01",
+      "references": 97,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "sky_decoy",
+      "references": 97,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "toujane_cobblestone1",
+      "references": 96,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case512orange",
+      "references": 96,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_ceiling1",
+      "references": 95,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_stonewall_bottom_01",
+      "references": 93,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_trim_ext_02",
+      "references": 91,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_grassroad_edge",
+      "references": 91,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodtrim05",
+      "references": 90,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "sky_hill400_defend",
+      "references": 88,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_wood_step_rise",
+      "references": 87,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "case1024orange",
+      "references": 87,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_colum_stonewall01",
+      "references": 85,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_green_tree_wall",
+      "references": 84,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingrad_concrete04",
+      "references": 81,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_10",
+      "references": 80,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_drain01",
+      "references": 80,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "metal@blue_pitted_rivits",
+      "references": 80,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "v_grass01",
+      "references": 80,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_drain02",
+      "references": 77,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_woodend01",
+      "references": 77,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_stonewall02",
+      "references": 76,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_concrete_stripe1",
+      "references": 75,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "stalingrad_brick01",
+      "references": 74,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "hoek_uveg",
+      "references": 73,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "ladder",
+      "references": 72,
+      "status": "technical-candidate",
+      "targets": [
+        "tools/ladder"
+      ]
+    },
+    {
+      "source": "goal_volume",
+      "references": 72,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_roof_clay_red_01",
+      "references": 70,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_dirt_trim_dark",
+      "references": 66,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "toujane_road1",
+      "references": 66,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_trim_ext_worn_wood_02",
+      "references": 66,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "holiday_tree_star",
+      "references": 65,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_treeline_01",
+      "references": 65,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingrad_concrete_trim01",
+      "references": 65,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_trim_ext_09",
+      "references": 65,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_hedgerowbackdrop_01",
+      "references": 64,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_256tile_stone_01",
+      "references": 63,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "v_dec_mudtrack",
+      "references": 63,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_wall_int_03",
+      "references": 59,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_snow02blend",
+      "references": 58,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "hill400_bunker_extwall01",
+      "references": 57,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_dec_darkstain06",
+      "references": 57,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_roof_01",
+      "references": 57,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_ceiling_02",
+      "references": 56,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_door_02",
+      "references": 54,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_plaster_ceiling1",
+      "references": 54,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingrad_concrete05",
+      "references": 53,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_wood_floor1",
+      "references": 53,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "egypt_roughdirt_04",
+      "references": 53,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "v_window07",
+      "references": 53,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_chimney_pipe_01",
+      "references": 52,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_door4",
+      "references": 52,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "duhoc_dirt_farm2",
+      "references": 50,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "v_brick02",
+      "references": 49,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "v_dec_stonewall05",
+      "references": 49,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_iwxposter",
+      "references": 49,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_trench01",
+      "references": 48,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "sky_libyatown",
+      "references": 48,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "case512green",
+      "references": 48,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "sky_rainvillers",
+      "references": 48,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_dec_debris",
+      "references": 48,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_ext_brick_03",
+      "references": 47,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "v_sidewalktrim01",
+      "references": 47,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_column_stone_02",
+      "references": 46,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "hill400_treeline01",
+      "references": 46,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_roughdirt_05",
+      "references": 44,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "mtl_caen_door_churchdouble_02",
+      "references": 44,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "hill400_dirt01_blend",
+      "references": 44,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_08",
+      "references": 43,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_drain03",
+      "references": 43,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonetrim02",
+      "references": 43,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_rubble01",
+      "references": 43,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_roof04",
+      "references": 42,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_asphaltdirt",
+      "references": 40,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_wood_boards01",
+      "references": 40,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "sky_breakout",
+      "references": 39,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "sky_eldaba",
+      "references": 39,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "sky_beltot",
+      "references": 39,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "sky_spooky_lf",
+      "references": 39,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "sky_rhinecrossing",
+      "references": 39,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "sky_duhoc_defend",
+      "references": 39,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_ceiling_woodworn_01",
+      "references": 39,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "caulk_shadow",
+      "references": 37,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_stonetrim08",
+      "references": 36,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_generic1",
+      "references": 36,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "sky_elalamein",
+      "references": 36,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_brick07",
+      "references": 36,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "clip_water",
+      "references": 35,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_wood_fence01",
+      "references": 35,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_brick_01_02",
+      "references": 32,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "$default",
+      "references": 32,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_hedgewall01",
+      "references": 31,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "holiday_light_snowflake",
+      "references": 31,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_brickred_02",
+      "references": 30,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "egypt_tile2a",
+      "references": 30,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "deckflag_np",
+      "references": 30,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "sky_silotown",
+      "references": 30,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_trim_ext_worn_wood_01",
+      "references": 30,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "clip_weap_glass",
+      "references": 30,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_corewalll02",
+      "references": 30,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_stonewall04",
+      "references": 29,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_int_07",
+      "references": 29,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_ground1_blend",
+      "references": 29,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_churchstone_02",
+      "references": 28,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_colum_stonewall02",
+      "references": 28,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_gravel_roof1",
+      "references": 28,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/gravel_concrete"
+      ]
+    },
+    {
+      "source": "toujane_cobblestone2",
+      "references": 27,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_floor_int_02",
+      "references": 27,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wallpaper03",
+      "references": 27,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_floor_int_01",
+      "references": 27,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_burnt_middle03_decal",
+      "references": 27,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodfloor01dec",
+      "references": 26,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_door01",
+      "references": 25,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_ceiling_01",
+      "references": 25,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_brick2",
+      "references": 25,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "v_wood_floor2",
+      "references": 25,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_hill400_wall_ext_01",
+      "references": 24,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_512tile_stone_02",
+      "references": 24,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "mtl_caen_roof_underside_01",
+      "references": 24,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_blanket2a",
+      "references": 24,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodwall_dec",
+      "references": 24,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "stalingradwinter_rubble01a",
+      "references": 24,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_brick_sand_generic1_decal2",
+      "references": 24,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "toujane_decal_darkstain",
+      "references": 24,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_gravestone_01",
+      "references": 24,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_asphaltcrack_01",
+      "references": 24,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/asphalt"
+      ]
+    },
+    {
+      "source": "dawnville2_sign_huiles",
+      "references": 22,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_lightstain01",
+      "references": 22,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_cliff",
+      "references": 22,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_shutter_02",
+      "references": 21,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_wallpaper05",
+      "references": 21,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_darkstain_04",
+      "references": 21,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_silotown_grass01",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_grass_yellow1_blend",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_door03",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_snow_wall",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_stonewall06",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_door_wide05",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_decal_windowbars",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "icicles",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_plaster_stucco1_body1",
+      "references": 20,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_plasterwall",
+      "references": 19,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_darkstain_05",
+      "references": 19,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_darkstain_02",
+      "references": 19,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_tile01",
+      "references": 19,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "v_sidewalk01",
+      "references": 19,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_roof_underside01_blend",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_roof_underside01",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_church_altartablefront",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_ground2",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case512red",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "tunisia_trench_wall1024",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_roof_04",
+      "references": 18,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_metal_floor01",
+      "references": 18,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_wood_credit",
+      "references": 17,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_dec_darkstain07",
+      "references": 17,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_grass_yellow2",
+      "references": 16,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_stair1top",
+      "references": 16,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "egypt_concrete_floor2",
+      "references": 15,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_road_cobblestone_01",
+      "references": 15,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_darkstain04",
+      "references": 14,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_asphaltdirt_02",
+      "references": 14,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_darkstain_06",
+      "references": 14,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "case1024",
+      "references": 14,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "water_rhine",
+      "references": 13,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "mtl_footgrass",
+      "references": 13,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_concretetrim01.tga",
+      "references": 13,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "stalingradwinter_snow03",
+      "references": 12,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_storagetank",
+      "references": 12,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_door_narrow03",
+      "references": 12,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_ground_decal02",
+      "references": 12,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_concrete_exteriorbunker1_trim",
+      "references": 12,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_caen_decal_road_03",
+      "references": 12,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_grass_yellow1_blend",
+      "references": 11,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_grass_road_trail3",
+      "references": 11,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_burnt_core01_decal",
+      "references": 11,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_sandstone_generic1_decal2",
+      "references": 11,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_window08",
+      "references": 10,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_dirt_farm1",
+      "references": 10,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "toujane_road2",
+      "references": 10,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_woodtrim04",
+      "references": 9,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_saci",
+      "references": 9,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_sign_dupasquet",
+      "references": 9,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_lyon",
+      "references": 9,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_roof_03",
+      "references": 9,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_road_asphalt_01",
+      "references": 9,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/asphalt"
+      ]
+    },
+    {
+      "source": "mtl_caen_trim_ext_worn_wood_03",
+      "references": 9,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "egypt_decal_brick9",
+      "references": 9,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "v_dec_mudedge01",
+      "references": 9,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_dirt_bump",
+      "references": 8,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "egypt_wood_door2",
+      "references": 8,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_roof01",
+      "references": 8,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_soze",
+      "references": 8,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "d_beachrock",
+      "references": 8,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_wood_floor2",
+      "references": 7,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_decal_jore",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_hotellafaire",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_decal_apertif",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_wire_mesh01",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "afrika_posters_german1",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "duhoc_concrete_stripe4",
+      "references": 7,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "case52",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonewall11",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_mudedge02",
+      "references": 7,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_roof_shinglewood_01",
+      "references": 6,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "v_dec_darkstain05",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_stonecorner02",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_white_window_a",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_plasterwall_white",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_window9_bottom",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_ground_decal03",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "dawnville2_dirt01_blend",
+      "references": 6,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "egypt_cloth_tent_body",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_wood_top",
+      "references": 6,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "mtl_caen_decal_lightstain_04",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_window_metalframe01",
+      "references": 6,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "mtl_caen_wall_ext_04",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_roof_alpha_lattice01",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_brick_crack_decal",
+      "references": 6,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "duhoc_dirt_crater2",
+      "references": 6,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "case14",
+      "references": 6,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_wall_256tile_stone_02",
+      "references": 5,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "v_dec_lightstain03",
+      "references": 5,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "noshader",
+      "references": 5,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_grimy_wall01",
+      "references": 5,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_hill400_roof_02",
+      "references": 5,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_concrete_crack01_decal",
+      "references": 5,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "stalingradwinter_decal_picture02",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_stonetrim07",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_stonewall01",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_plasterwall03",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_gully_floor_decal",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_dec_stonewall02",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_decal_adobe1_top",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_stonewalltop_01",
+      "references": 4,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_silo_woodbeam",
+      "references": 4,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/wood"
+      ]
+    },
+    {
+      "source": "duhoc_bunker_wall_floor_trim",
+      "references": 4,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "nodraw",
+      "references": 4,
+      "status": "unmapped-technical",
+      "targets": []
+    },
+    {
+      "source": "v_dec_plasterwall01",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "holiday_white_lights",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_window_covercurtain_4",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_crater_snow_decal",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_tile4a",
+      "references": 3,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/tiles"
+      ]
+    },
+    {
+      "source": "bunker_decals",
+      "references": 3,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "stalingradwinter_decal_restaurant",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "afrika_banner_german1",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_concrete_interiorbunker1",
+      "references": 3,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "toujane_decal_cornerwallplaster01",
+      "references": 3,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_window05",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_poster02",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_poster04",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_window5",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_plaster_stucco1_decal1",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "egypt_decal_brick8_bottom",
+      "references": 2,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "dawnville2_rusty_fence01",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_burnt_window01_decal",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "bunkervent",
+      "references": 2,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "mtl_hill400_decal_trim_01",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_ironfence01",
+      "references": 2,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/metal"
+      ]
+    },
+    {
+      "source": "duhoc_crater_alpha",
+      "references": 2,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_picture03",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_decal_stonewall_05",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_poster03",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_poster01",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "rhine_decals",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_poster05",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_trn_station",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_mural07",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_decal_poster08",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "toujane_dirt_trim_light",
+      "references": 1,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/dirt"
+      ]
+    },
+    {
+      "source": "egypt_brick_sand_generic1_decal1",
+      "references": 1,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/bricks"
+      ]
+    },
+    {
+      "source": "v_concrete_generic1trim1.tga",
+      "references": 1,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_concrete_generic1trim2.tga",
+      "references": 1,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_concrete_generic1trim3.tga",
+      "references": 1,
+      "status": "visual-candidate",
+      "targets": [
+        "materials/concrete"
+      ]
+    },
+    {
+      "source": "v_sign06",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "mtl_caen_sign_soze",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "v_sign06_number6",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_window02",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_window01_decal01",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    },
+    {
+      "source": "stalingradwinter_window01_decal02",
+      "references": 1,
+      "status": "unmapped-visual",
+      "targets": []
+    }
+  ],
+  "models": [
+    {
+      "source": "xmodel/brush_newgrass_squareclump",
+      "references": 1005,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_newgrass_triangularclumpshort",
+      "references": 986,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_newgrass_triangularclump",
+      "references": 982,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_newgrass_squareclumpshort",
+      "references": 927,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/character_german_normandy_thin",
+      "references": 237,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallcolumn1_tall.map",
+      "references": 208,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection1_tall.map",
+      "references": 167,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_barbedwire_2",
+      "references": 152,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_weeds_01",
+      "references": 128,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_haybale",
+      "references": 120,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_grassflowerplants_squareclump",
+      "references": 119,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_grey_oak_xl_a",
+      "references": 118,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_hedge_wall_group_1",
+      "references": 116,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_hedge_wall_1",
+      "references": 110,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_barbedwire_4",
+      "references": 98,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_lamp01_on",
+      "references": 91,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_lightbulbwirebase",
+      "references": 85,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_lightbulbwire",
+      "references": 85,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_grey_oak_lg_a",
+      "references": 78,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_pine_xl_b",
+      "references": 78,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_streetlamp_on",
+      "references": 78,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_kitchen_winebottle",
+      "references": 74,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_bush_full_01",
+      "references": 63,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/palmtree_tall.map",
+      "references": 62,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_desertpalm02",
+      "references": 60,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_snow_pine_xl_c",
+      "references": 55,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallcolumn1.map",
+      "references": 53,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/props/villers_wood_barb.map",
+      "references": 50,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/crate01",
+      "references": 47,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/caen_fence_2",
+      "references": 46,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection1.map",
+      "references": 45,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/viewmodel_panzerschreck",
+      "references": 40,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_lightbulb_on",
+      "references": 40,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_desertpalmgroup",
+      "references": 39,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_hedgewallgroup_flip_1",
+      "references": 37,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_newgrasstuft_shortwide",
+      "references": 37,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/window_black_a",
+      "references": 36,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_toujanebigbushy",
+      "references": 35,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_hedge_wall_2",
+      "references": 34,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_dragonstooth_egypt",
+      "references": 33,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_desertshrubgroup01",
+      "references": 33,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wooden_barrel1",
+      "references": 32,
+      "status": "model-candidate",
+      "targets": [
+        "props/barrel/barrel.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/brush_desertspikeyshrub",
+      "references": 32,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_newgrasstuft_tallnarrow",
+      "references": 31,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/bunker_ceiling_light_on",
+      "references": 27,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/light_lantern_on",
+      "references": 26,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_grey_oak_med_a",
+      "references": 26,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_dragonstooth",
+      "references": 26,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_shortsection",
+      "references": 25,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_desertbushy",
+      "references": 23,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_river_birch_lg_a",
+      "references": 22,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_barrel_black",
+      "references": 22,
+      "status": "model-candidate",
+      "targets": [
+        "props/barrel/barrel.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/tree_destroyed_tree_b",
+      "references": 22,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_nebelhandgrenate",
+      "references": 21,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/pole_short.map",
+      "references": 21,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_lsperk",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hoek_jugger",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hoek_speed",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hoek_tap",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_ammo",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hoek_betty_m",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/nyaa_perkacola_phdflopper",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hoek_packapunch",
+      "references": 20,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hoek_quick_revive",
+      "references": 19,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_egypt_desert_1",
+      "references": 19,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_haz3",
+      "references": 18,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/wallsupport1.map",
+      "references": 18,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_mg42",
+      "references": 18,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection1_destroyed2.map",
+      "references": 18,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_bench_d.",
+      "references": 17,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_haz4",
+      "references": 17,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_plainchair",
+      "references": 16,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_desertgreenfanshrub",
+      "references": 16,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_hedgehog",
+      "references": 16,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/light_walllight_on",
+      "references": 15,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crate_wehrmacht8a",
+      "references": 15,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/caen_hedge_wall_3",
+      "references": 15,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_desertpalm01",
+      "references": 15,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_egypt_desert_2",
+      "references": 15,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection_lowcover1_post.map",
+      "references": 15,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/powerpole01",
+      "references": 14,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/character_british_normandy_a",
+      "references": 14,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_desertpalm03",
+      "references": 13,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_barrel_benzin",
+      "references": 13,
+      "status": "model-candidate",
+      "targets": [
+        "props/barrel/barrel.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/prop_trolleypole1",
+      "references": 13,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone7",
+      "references": 13,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_destroyed_tree_a",
+      "references": 13,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_haz1",
+      "references": 13,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/toujane/crates/cratepile_med5.map",
+      "references": 12,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wine_crate",
+      "references": 11,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/prop_wickerbasket5",
+      "references": 11,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_winebottle_breakable",
+      "references": 11,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone2",
+      "references": 10,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hill400_dragonstooth",
+      "references": 10,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/railpipe_s02",
+      "references": 10,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/brush_desertshrubbrowntall",
+      "references": 10,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/facade2.map",
+      "references": 10,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallcolumn1_destroyed2.map",
+      "references": 10,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_thompson",
+      "references": 9,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_m1garand",
+      "references": 9,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/giftbox_1",
+      "references": 9,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/dead_pine_snow",
+      "references": 9,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_snow_river_birch_med_c",
+      "references": 9,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_bunkerlocker_double",
+      "references": 9,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_barrel_silver",
+      "references": 9,
+      "status": "model-candidate",
+      "targets": [
+        "props/barrel/barrel.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/prop_barrel_green",
+      "references": 9,
+      "status": "model-candidate",
+      "targets": [
+        "props/barrel/barrel.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/tree_river_birch_med_b",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone1",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone3",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone10",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_river_birch_med_a",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crypt1",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_haz5",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_haz6",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_simplel.map",
+      "references": 8,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_1n1halfstory.map",
+      "references": 8,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_single_flat",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crate_dak1",
+      "references": 8,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/airborne",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/wehrmacht_soldier",
+      "references": 8,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallcolumn1_destroyed1.map",
+      "references": 8,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/giftbox_2",
+      "references": 7,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/candy_cane",
+      "references": 7,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/north_pole",
+      "references": 7,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_endsection_right",
+      "references": 7,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wood_debris_big_burnt_01",
+      "references": 7,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wood_debris_small_burnt_01",
+      "references": 7,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection1_tall_destroyed1.map",
+      "references": 7,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/windows/loft3.map",
+      "references": 7,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/brick_funnel_wide1.map",
+      "references": 7,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_m1carbine",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone5",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/civiliancar_damaged_blue",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_door_wood",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_endsection_left",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/crate02",
+      "references": 6,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "prefabs/libyatown/building_brown1story.map",
+      "references": 6,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/toujane/tj_merchant2.map",
+      "references": 6,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/dometop.map",
+      "references": 6,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/ladder_weaponclip.map",
+      "references": 6,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/dome_08",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection1_destroyed1.map",
+      "references": 6,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallcolumn4.map",
+      "references": 6,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_redbrick_debris_04",
+      "references": 6,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tractor",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/haycart",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_metal_pail1",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/railpipe01",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wickerbasket3",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crate_dak4",
+      "references": 5,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "prefabs/libyatown/facade3.map",
+      "references": 5,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/facade4.map",
+      "references": 5,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_curvedsection",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_opel_blitz_desert_static",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_30cal",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/traverse/wall_hop.map",
+      "references": 5,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wood_debris_big_burnt_02",
+      "references": 5,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/windows/loft1.map",
+      "references": 5,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_wunderwaffe_dg2",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wickerbasket8",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_bookshelves1",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/horse_dead_1",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_snow_river_birch_lg_c",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/railpipe03",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/static_vehicle_german_kubelwagen",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_haz2",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_redbrick_debris_01",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_simple2.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/detail_whitechimney.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_simplesmall.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_barbedwire_3",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/dome_07",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crate_dak9",
+      "references": 4,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/vehicle_american_sherman",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection3.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/windows/loft4.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/stone_funnel1.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection_lowcover1_long.map",
+      "references": 4,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone6",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_redbrick_debris_03",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_flak88_box",
+      "references": 4,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/ak74_w",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_mp44",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wickerbasket6",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_geraniums_1",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_mp40",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/light_walllightornate_off",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/storage_tank01",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_longsection",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_dresser_d",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_opel_blitz_woodland_static",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_2storysquare.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/detail_brownchimney.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_brown2story.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/building_brown2story3.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wickerbasket7",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/facade1.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_wickerbasket2",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_africa_jeep_static",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/toujane/crates/cratepile_large3.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/noentry_bldg1_addon1_destroyed.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/brick_funnel_thin1.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection_lowcover1.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection_lowcover1_short.map",
+      "references": 3,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone8",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/horse_dead_2",
+      "references": 3,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone11",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/xmas_tree",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_trenchgun",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_telefloor",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_g18",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_barrel_white",
+      "references": 2,
+      "status": "model-candidate",
+      "targets": [
+        "props/barrel/barrel.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/prop_mortar_case",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/cow_dead_3",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/hill400_dragonstooth_d",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_duhoc_bunker_table",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/railpipe02",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_river_birch_lg_b",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/ray_gun_w",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/gully_bridge_debris_lg01",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/building_simple3.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/matmata/mat_bldg04.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_2storycornerinset.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/tower2.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_angledwall2.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_panzer_ii_static",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp/sd_bombzone_a_desertflak.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp/ctf_flag_allies.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp/ctf_flag_axis.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp/sd_bombtrigger.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_luger",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/character_us_ranger_pvt_d",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_civilian_car_red_d",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story2_destroyed.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/props/gate1.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/chimney2.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/brick_wide1.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/brick_thin1.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/chimney1.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_tombstone4",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_fence_1",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/piano.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_bookshelves1_d",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_chickencoop",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_fence_post_1",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_civilian_car_white_d",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/haycart_destroyed",
+      "references": 2,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/lamps/lantern_lit.map",
+      "references": 2,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_m27",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_cargoship",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/light_walllightcrystal_off",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_opel_blitz_snow_static",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_flasher",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_karoff",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_bike",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_american_jeep_crash_static",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_dirtysink",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_spitfire_flying",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/iwx_huzal",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/mp5_w",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_trolleypole2",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_higgins_grapple_hook",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_wet_curvedsection",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/viewmodel_pp90m1_reddot",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_ovaldiningtable",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_tableclock1",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/weapon_an94_acog",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crate_wehrmacht1",
+      "references": 1,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/prop_crate_wehrmacht3",
+      "references": 1,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/prop_crate_wehrmacht5",
+      "references": 1,
+      "status": "model-candidate",
+      "targets": [
+        "props/crates/crates.gltf"
+      ]
+    },
+    {
+      "source": "xmodel/furniture_bed_bunker2",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_redbrick_debris_02",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_duhoc_couch",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_desk_d_a",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/military_sandbag_cornersection",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/dome_04",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/2story2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/eldaba/ed_bldg_flpart2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/eldaba/ed_bldg_part2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/toujane/hanging_rug1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/toujane/tj_merchant3.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/building_mosque.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/tower1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/facade1.1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/archway.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/toujane/crates/cratepile_med2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/awning_2x4-5_1",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/libyatown/smallbase1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/building06.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp_matmata/building_brown2story2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/egypt_prop_well1",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_market_stands6",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp/sd_bombzone_b_desertflak_aa.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/mp/sd_bombzone_b_desertflak.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/bunker02",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/tree_river_birch_xl_a",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/character_us_ranger_pvt_c",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/character_us_ranger_sgt_randall",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/civiliancar_intact_blue",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/cliff07",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/cliff05",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "newvillers_geo.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/character_british_normandy_price",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_tiger_woodland",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/german_artillery_flak88_aa_nm_static",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/villers_noentry_bldg1_addon1_destroyed.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_noentry2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story_small1_lightdmg.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story6.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story7.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story3.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/townhall.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_noentry1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_noentry3.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/noentry_bldg2_addon1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/noentry_bldg2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story_small1_destroyed.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story_small2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story8.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/noentry_bldg1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story4.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_corner_d.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/noentry_bldg1_addon1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/fieldhq.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story_small3a.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/smalldestroyed1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story3.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/church.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/postoffice.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/props/churchgate.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/corevillers/bldgs/2story5_detail.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/chimneys/chimney3.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection1_tall_destroyed1_long.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection4.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/caen_fence_3",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_armoire_d",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_plainchair_d",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/furniture_rolltopdesk_d",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/rhine/misc/door02.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/bldgs/villers_2story5.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/doors/wooden_gate.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_stove01",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/props/groundsteps1.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/walls/wallsection_long_destroyed3.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/rhine/misc/grave_c.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "prefabs/newvillers/props/grave_stone2.map",
+      "references": 1,
+      "status": "prefab-reference",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_crypt2",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_doghouse1",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/prop_doghouse2",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    },
+    {
+      "source": "xmodel/vehicle_halftrack_mg_woodland_d",
+      "references": 1,
+      "status": "unmapped-model",
+      "targets": []
+    }
+  ]
+}

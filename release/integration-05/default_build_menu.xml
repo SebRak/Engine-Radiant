@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="2.0">
+  <build name="&#x25B6; Play">
+    <command>powershell.exe -NoLogo -NoProfile -ExecutionPolicy RemoteSigned -File "[RadiantPath]Play_Map.ps1" -Map "[MapFile]"</command>
+  </build>
+</project>

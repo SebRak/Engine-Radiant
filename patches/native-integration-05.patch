@@ -1,0 +1,168 @@
+--- a/radiant/preferences.cpp
++++ b/radiant/preferences.cpp
+@@ -308,6 +308,8 @@
+ 	 */
+ 
+ 	Directory_forEach( path, matchFileExtension( "game", [&]( const char *name ){
++		if ( !string_equal( name, "engine.game" ) )
++			return;
+ 		const auto strPath = StringStream( path, name );
+ 		globalOutputStream() << strPath << '\n';
+ 
+@@ -341,31 +343,10 @@
+ 	theme_construct(); // after global prefs, b4 any normal windows
+ 	ScanForGames();
+ 	if ( mGames.empty() ) {
+-		Error( "Didn't find any valid game file descriptions, aborting\n" );
+-	}
+-	else
+-	{
+-		mGames.sort( []( const CGameDescription* one, const CGameDescription* another ){
+-			return one->mGameFile < another->mGameFile;
+-		} );
+-	}
+-
+-	CGameDescription* currentGameDescription = 0;
+-
+-	if ( !m_bGamePrompt ) {
+-		// search by .game name
+-		if( auto found = std::ranges::find( mGames, m_sGameFile.m_value, &CGameDescription::mGameFile ); found != mGames.end() )
+-			currentGameDescription = *found;
+-	}
+-	if ( !currentGameDescription ) {
+-		Create( nullptr );
+-		DoGameDialog();
+-		Destroy(); // destroy the window immediately, doing so in destructor of static object is too late
+-		// use m_nComboSelect to identify the game to run as and set the globals
+-		currentGameDescription = GameDescriptionForComboItem();
+-		ASSERT_NOTNULL( currentGameDescription );
+-	}
+-	g_pGameDescription = currentGameDescription;
++		Error( "RawFront profile is missing or invalid. Run Start_RawFront_Radiant.cmd to prepare it.\n" );
++	}
++	m_sGameFile.assign( "engine.game" );
++	g_pGameDescription = mGames.front();
+ 
+ 	g_pGameDescription->Dump();
+ }
+@@ -629,21 +610,13 @@
+ 								PreferencesPage preferencesPage( *this, layout );
+ 								Global_constructPreferences( preferencesPage );
+ 							}
+-							QStandardItem *group = PreferenceTree_appendPage( model, model->invisibleRootItem(), "Global", pageIndex );
+-							{
+-								const auto [ pageIndex, layout ] = PreferencePages_addPage( m_notebook, "Game" );
+-								PreferencesPage preferencesPage( *this, layout );
+-								g_GamesDialog.CreateGlobalFrame( preferencesPage, false );
+-
+-								PreferenceTree_appendPage( model, group, "Game", pageIndex );
+-							}
++							PreferenceTree_appendPage( model, model->invisibleRootItem(), "Global", pageIndex );
+ 						}
+ 
+ 						{
+ 							const auto [ pageIndex, layout ] = PreferencePages_addPage( m_notebook, "Game Settings" );
+ 							{
+ 								PreferencesPage preferencesPage( *this, layout );
+-								Game_constructPreferences( preferencesPage );
+ 								PreferencesPageCallbacks_constructPage( g_gamePreferences, preferencesPage );
+ 							}
+ 
+@@ -803,8 +776,8 @@
+ 
+ 
+ 
+-void GameName_importString( const char* value ){
+-	gamename_set( value );
++void GameName_importString( const char* ){
++	gamename_set( g_pGameDescription->getRequiredKeyValue( "basegame" ) );
+ }
+ typedef FreeCaller<void(const char*), GameName_importString> GameNameImportStringCaller;
+ void GameName_exportString( const StringImportCallback& importer ){
+--- a/radiant/watchbsp.cpp
++++ b/radiant/watchbsp.cpp
+@@ -220,20 +220,7 @@
+ void Build_constructPreferences( PreferencesPage& page ){
+ 	QCheckBox* monitorbsp = page.appendCheckBox( "", "Enable Build Process Monitoring", g_WatchBSP_Enabled );
+ 	QCheckBox* leakstop = page.appendCheckBox( "", "Stop Compilation on Leak", g_WatchBSP_LeakStop );
+-	QCheckBox* runengine = page.appendCheckBox( "", "Run Engine After Compile", g_WatchBSP_RunQuake );
+ 	Widget_connectToggleDependency( leakstop, monitorbsp );
+-//	Widget_connectToggleDependency( runengine, monitorbsp );
+-
+-	QWidget* engine = page.appendEntry( "Engine to Run", g_engineExecutable.getImportCaller(), g_engineExecutable.getExportWithDefaultCaller() );
+-	Widget_connectToggleDependency( engine, runengine );
+-	QWidget* engineargs = page.appendEntry( "Engine Arguments", g_engineArgs.getImportCaller(), g_engineArgs.getExportWithDefaultCaller() );
+-	Widget_connectToggleDependency( engineargs, runengine );
+-	if( !string_empty( g_pGameDescription->getKeyValue( "show_gamemode" ) ) ){
+-		QWidget* mpengine = page.appendEntry( "MP Engine to Run", g_engineExecutableMP.getImportCaller(), g_engineExecutableMP.getExportWithDefaultCaller() );
+-		Widget_connectToggleDependency( mpengine, runengine );
+-		QWidget* mpengineargs = page.appendEntry( "MP Engine Arguments", g_engineArgsMP.getImportCaller(), g_engineArgsMP.getExportWithDefaultCaller() );
+-		Widget_connectToggleDependency( mpengineargs, runengine );
+-	}
+ 
+ 	page.appendCheckBox( "", "Dump non Monitored Builds Log", g_WatchBSP0_DumpLog );
+ 
+--- a/plugins/assmodel/model.cpp
++++ b/plugins/assmodel/model.cpp
+@@ -20,6 +20,8 @@
+  */
+ 
+ #include "model.h"
++
++#include <string_view>
+ 
+ #include "iarchive.h"
+ #include "idatastream.h"
+@@ -75,6 +77,7 @@
+ 	const aiScene* m_scene;
+ 	const char* m_rootPath;
+ 	const char* m_matName; // forced global mat name, if not null
++	std::string_view m_rawfrontPropPath;
+ };
+ 
+ class PicoSurface final :
+@@ -379,6 +382,8 @@
+ 	PicoModel( const AssScene scene ){
+ 		m_aabb_local = AABB();
+ 		CopyPicoModel( scene, scene.m_scene->mRootNode );
++		if ( m_surfaces.empty() )
++			constructNull();
+ 	}
+ 	~PicoModel(){
+ 		for ( auto *surf : m_surfaces )
+@@ -424,10 +429,21 @@
+ 	}
+ 
+ private:
++	static bool IsRawFrontCollisionMesh( const AssScene& scene, const aiMesh& mesh ){
++		const auto path = scene.m_rawfrontPropPath;
++		if ( path.empty() )
++			return false;
++		const std::string_view name( mesh.mName.C_Str() );
++		if ( path.starts_with( "props/shipping_container/" ) && name == "clips" )
++			return true;
++		const auto stem = path.substr( path.find_last_of( '/' ) + 1 );
++		return name.ends_with( "_clip" ) && name.substr( 0, name.size() - 5 ) == stem;
++	}
++
+ 	void CopyPicoModel( const AssScene scene, const aiNode* node ){
+ 		for( size_t n = 0; n < node->mNumMeshes; ++n ){
+ 			const aiMesh *mesh = scene.m_scene->mMeshes[node->mMeshes[n]];
+-			if( mesh->mPrimitiveTypes & aiPrimitiveType_TRIANGLE ){
++			if( ( mesh->mPrimitiveTypes & aiPrimitiveType_TRIANGLE ) && !IsRawFrontCollisionMesh( scene, *mesh ) ){
+ 				auto *picosurface = new PicoSurface( scene, mesh );
+ 				aabb_extend_by_aabb_safe( m_aabb_local, picosurface->localAABB() );
+ 				m_surfaces.push_back( picosurface );
+@@ -688,7 +704,11 @@
+ 			globalWarningStream() << "AI_SCENE_FLAGS_INCOMPLETE\n";
+ 		const auto rootPath = StringStream<64>( PathFilenameless( file.getName() ) );
+ 		const auto matName = StringStream<64>( PathExtensionless( file.getName() ) );
+-		return ( new PicoModelNode( AssScene{ scene, rootPath, path_extension_is( file.getName(), "mdl" )? matName.c_str() : nullptr } ) )->node();
++		const std::string_view modelPath( file.getName() );
++		const auto rawfrontPropPath = modelPath.starts_with( "props/" ) && modelPath.ends_with( ".gltf" )
++			? modelPath.substr( 0, modelPath.size() - 5 )
++			: std::string_view{};
++		return ( new PicoModelNode( AssScene{ scene, rootPath, path_extension_is( file.getName(), "mdl" )? matName.c_str() : nullptr, rawfrontPropPath } ) )->node();
+ 	}
+ 	else{
+ 		return ( new PicoModelNode() )->node();
