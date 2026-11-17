@@ -131,17 +131,18 @@
  void Entity_constructMenu( class QMenu* menu );
 --- a/radiant/entity.cpp
 +++ b/radiant/entity.cpp
-@@ -23,6 +23,9 @@
+@@ -23,6 +23,10 @@
  
  #include "ientity.h"
  #include "iselection.h"
 +#include <QFileInfo>
++#include <QMessageBox>
 +#include <QRegularExpression>
 +
  #include "imodel.h"
  #include "ifilesystem.h"
  #include "iundo.h"
-@@ -394,6 +397,12 @@
+@@ -394,6 +398,12 @@
  	}
  #endif
  
@@ -154,7 +155,7 @@
  	const auto command = StringStream<64>( "entityCreate -class ", name );
  	UndoableCommand undo( command );
  
-@@ -492,7 +501,7 @@
+@@ -492,7 +502,7 @@
  	}
  
  	if ( isModel && string_empty( EntityClass_valueForKey( *entityClass, entityClass->miscmodel_key() ) ) ) { // handle set default model key value : no dialog needed
@@ -163,7 +164,7 @@
  		if ( model != 0 ) {
  			entity->setKeyValue( entityClass->miscmodel_key(), model );
  		}
-@@ -575,7 +584,8 @@
+@@ -575,7 +585,8 @@
  	}
  }
  
@@ -173,7 +174,7 @@
  	StringOutputStream buffer( 256 );
  
  	if( !string_empty( filepath ) ){
-@@ -584,7 +594,7 @@
+@@ -584,7 +595,7 @@
  			buffer << root << filepath;
  	}
  	if( buffer.empty() ){
@@ -182,7 +183,7 @@
  
  		if ( !file_readable( buffer ) ) {
  			// just go to fsmain
-@@ -596,6 +606,19 @@
+@@ -596,6 +607,18 @@
  	if ( filename != 0 ) {
  		// use VFS to get the correct relative path
  		const char* relative = path_make_relative( filename, GlobalFileSystem().findRoot( filename ) );
@@ -193,9 +194,8 @@
 +			const auto mapName = QFileInfo( QString::fromLatin1( Map_Name( g_map ) ) ).completeBaseName();
 +			if ( relative == filename || !match.hasMatch()
 +			     || ( !match.captured( 1 ).isEmpty() && match.captured( 1 ) != mapName ) ) {
-+				qt_MessageBox( parent,
-+				    "Choose props/<name>/<name>.gltf or maps/<map>/props/<name>/<name>.gltf.",
-+				    "RawFront Prop" );
++				QMessageBox::warning( parent, "RawFront Prop",
++				    "Choose props/<name>/<name>.gltf or maps/<map>/props/<name>/<name>.gltf." );
 +				return nullptr;
 +			}
 +		}
