@@ -162,7 +162,7 @@ jobs:
         run: |
           set -euo pipefail
           patch=../integration/patches/preview-01-rc01.patch
-          printf '%s  %s\n' 1aabb1a5680e32a9236b6112fb70f45a421b34758bd48aa3e673cf9a4516359a "$patch" | sha256sum -c -
+          printf '%s  %s\n' 8df898b2a03b9a54a014151657f737338acfbec6de1ae4b8a84aa33ec48dc1d6 "$patch" | sha256sum -c -
           git -c core.autocrlf=false checkout-index --force -- radiant/entityinspector.cpp radiant/main.cpp radiant/radiant.rc
           git -c core.autocrlf=false apply --check --whitespace=error "$patch"
           git -c core.autocrlf=false apply --whitespace=error "$patch"
@@ -178,8 +178,12 @@ jobs:
           RC01_ICON
           icon=../dist/rawfront-radiant-test.ico
           test -s "$icon"
-          cp "$icon" radiant/radiant.ico
+          cp "$icon" icons/radiant.ico
           cp "$icon" setup/data/tools/bitmaps/radiant.ico
+          {
+            printf '%s\n' '1 ICON "icons/radiant.ico"'
+            sed -n '/^1 VERSIONINFO/,/^#ifdef APSTUDIO_INVOKED/{ /^#ifdef APSTUDIO_INVOKED/d; p; }' radiant/radiant.rc
+          } > icons/radiant.rc
           git diff --binary HEAD > ../dist/preview-01-rc01-applied.patch
 
       - name: Build Preview 0.1 RC01
