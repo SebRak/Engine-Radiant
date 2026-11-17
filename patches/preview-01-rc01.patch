@@ -1,0 +1,231 @@
+--- a/radiant/main.cpp
++++ b/radiant/main.cpp
+@@ -90,8 +90,6 @@
+ #include <QApplication>
+ #include "gtkutil/glwidget.h"
+ 
+-void show_splash();
+-void hide_splash();
+ 
+ #if defined ( _DEBUG ) && defined ( WIN32 ) && defined ( _MSC_VER )
+ #include "crtdbg.h"
+@@ -415,7 +413,8 @@
+ 	setlocale( LC_NUMERIC, "C" );
+ 	qInstallMessageHandler( qute_messageHandler );
+ 	QCoreApplication::setOrganizationName( "QtRadiant" );
+-	QCoreApplication::setApplicationName( "NetRadiant-Custom" );
++	QCoreApplication::setApplicationName( "RawFront Radiant" );
++	QGuiApplication::setApplicationDisplayName( "RawFront Radiant" );
+ 	QCoreApplication::setApplicationVersion( QT_VERSION_STR );
+ 
+ 	GlobalDebugMessageHandler::instance().setHandler( GlobalPopupDebugMessageHandler::instance() );
+@@ -432,8 +431,6 @@
+ 
+ 	QApplication::setWindowIcon( new_local_icon( "radiant.ico" ) ); // before any windows, after paths_init()
+ 
+-	show_splash();
+-
+ 	create_global_pid();
+ 
+ 	GlobalPreferences_Init();
+@@ -453,8 +450,6 @@
+ //	user_shortcuts_init();
+ 
+ 	g_pParentWnd = new MainFrame();
+-
+-	hide_splash();
+ 
+ 	if( !g_openMapByCmd.empty() ){
+ 		Map_LoadFile( g_openMapByCmd.c_str() );
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -41,7 +41,6 @@
+ #include <ctime>
+ 
+ #include <QWidget>
+-#include <QSplashScreen>
+ #include <QCoreApplication>
+ #include <QMainWindow>
+ #include <QLabel>
+@@ -1640,26 +1639,6 @@
+ };
+ 
+ 
+-QSplashScreen *create_splash(){
+-	auto *splash = new QSplashScreen( new_local_image( "splash.png" ) );
+-	splash->show();
+-	return splash;
+-}
+-
+-static QSplashScreen *splash_screen = 0;
+-
+-void show_splash(){
+-	splash_screen = create_splash();
+-
+-	process_gui();
+-}
+-
+-void hide_splash(){
+-//.	splash_screen->finish();
+-	delete splash_screen;
+-}
+-
+-
+ void user_shortcuts_init(){
+ 	const auto path = StringStream( SettingsPath_get(), g_pGameDescription->mGameFile, '/' );
+ 	LoadCommandMap( path );
+--- a/radiant/qe3.cpp
++++ b/radiant/qe3.cpp
+@@ -278,7 +278,7 @@
+ // Sys_ functions
+ 
+ void Sys_SetTitle( const char *text, bool modified ){
+-	auto title = StringStream( text );
++	auto title = StringStream( "RawFront Radiant — ", path_get_filename_start( text ) );
+ 
+ 	if ( modified ) {
+ 		title << " *";
+--- a/radiant/radiant.rc
++++ b/radiant/radiant.rc
+@@ -29,6 +29,30 @@
+ // Icon with lowest ID value placed first to ensure application icon
+ // remains consistent on all systems.
+ IDI_RADIANT             ICON    DISCARDABLE     "radiant.ico"
++
++1 VERSIONINFO
++FILEVERSION 0,1,0,1
++PRODUCTVERSION 0,1,0,1
++FILEFLAGSMASK 0x3fL
++FILEFLAGS 0x02L
++FILEOS 0x00040004L
++FILETYPE 0x01L
++BEGIN
++    BLOCK "StringFileInfo"
++    BEGIN
++        BLOCK "040904B0"
++        BEGIN
++            VALUE "FileDescription", "RawFront Radiant"
++            VALUE "FileVersion", "0.1 RC01"
++            VALUE "ProductName", "RawFront Radiant"
++            VALUE "ProductVersion", "0.1 RC01"
++        END
++    END
++    BLOCK "VarFileInfo"
++    BEGIN
++        VALUE "Translation", 0x0409, 1200
++    END
++END
+ 
+ #ifdef APSTUDIO_INVOKED
+ /////////////////////////////////////////////////////////////////////////////
+--- a/radiant/entity.h
++++ b/radiant/entity.h
+@@ -29,7 +29,7 @@
+ void Scene_EntitySetClassname_Selected( const char* classname );
+ 
+ 
+-const char* misc_model_dialog( class QWidget* parent, const char* filepath = "" );
++const char* misc_model_dialog( class QWidget* parent, const char* filepath = "", bool rawFrontProp = false );
+ void Entity_setColour();
+ 
+ void Entity_constructMenu( class QMenu* menu );
+--- a/radiant/entity.cpp
++++ b/radiant/entity.cpp
+@@ -23,6 +23,9 @@
+ 
+ #include "ientity.h"
+ #include "iselection.h"
++#include <QFileInfo>
++#include <QRegularExpression>
++
+ #include "imodel.h"
+ #include "ifilesystem.h"
+ #include "iundo.h"
+@@ -394,6 +397,12 @@
+ 	}
+ #endif
+ 
++	const bool rawFrontProp = classname_equal( name, "prop" )
++	                          && string_equal( g_pGameDescription->getKeyValue( "basegame" ), "rawfront" );
++	const char* propModel = rawFrontProp ? misc_model_dialog( MainFrame_getWindow(), "", true ) : nullptr;
++	if ( rawFrontProp && propModel == nullptr )
++		return;
++
+ 	const auto command = StringStream<64>( "entityCreate -class ", name );
+ 	UndoableCommand undo( command );
+ 
+@@ -492,7 +501,7 @@
+ 	}
+ 
+ 	if ( isModel && string_empty( EntityClass_valueForKey( *entityClass, entityClass->miscmodel_key() ) ) ) { // handle set default model key value : no dialog needed
+-		const char* model = misc_model_dialog( MainFrame_getWindow() );
++		const char* model = rawFrontProp ? propModel : misc_model_dialog( MainFrame_getWindow() );
+ 		if ( model != 0 ) {
+ 			entity->setKeyValue( entityClass->miscmodel_key(), model );
+ 		}
+@@ -575,7 +584,8 @@
+ 	}
+ }
+ 
+-const char* misc_model_dialog( QWidget* parent, const char* filepath ){
++const char* misc_model_dialog( QWidget* parent, const char* filepath, bool rawFrontProp ){
++	rawFrontProp = rawFrontProp && string_equal( g_pGameDescription->getKeyValue( "basegame" ), "rawfront" );
+ 	StringOutputStream buffer( 256 );
+ 
+ 	if( !string_empty( filepath ) ){
+@@ -584,7 +594,7 @@
+ 			buffer << root << filepath;
+ 	}
+ 	if( buffer.empty() ){
+-		buffer << g_qeglobals.m_userGamePath << "models/";
++		buffer << g_qeglobals.m_userGamePath << ( rawFrontProp ? "props/" : "models/" );
+ 
+ 		if ( !file_readable( buffer ) ) {
+ 			// just go to fsmain
+@@ -596,6 +606,19 @@
+ 	if ( filename != 0 ) {
+ 		// use VFS to get the correct relative path
+ 		const char* relative = path_make_relative( filename, GlobalFileSystem().findRoot( filename ) );
++		if ( rawFrontProp ) {
++			static const QRegularExpression supported(
++			    QStringLiteral( R"(\A(?:props|maps/([a-z0-9_]+)/props)/([a-z0-9_]+)/\2\.gltf\z)" ) );
++			const auto match = supported.match( QString::fromLatin1( relative ) );
++			const auto mapName = QFileInfo( QString::fromLatin1( Map_Name( g_map ) ) ).completeBaseName();
++			if ( relative == filename || !match.hasMatch()
++			     || ( !match.captured( 1 ).isEmpty() && match.captured( 1 ) != mapName ) ) {
++				qt_MessageBox( parent,
++				    "Choose props/<name>/<name>.gltf or maps/<map>/props/<name>/<name>.gltf.",
++				    "RawFront Prop" );
++				return nullptr;
++			}
++		}
+ 		if ( relative == filename ) {
+ 			globalWarningStream() << "WARNING: could not extract the relative path, using full path instead\n";
+ 		}
+--- a/radiant/entityinspector.cpp
++++ b/radiant/entityinspector.cpp
+@@ -301,7 +301,8 @@
+ 	}
+ 	typedef MemberCaller<ModelAttribute, void(), &ModelAttribute::update> UpdateCaller;
+ 	void browse(){
+-		const char *filename = misc_model_dialog( m_entry->window(), m_entry->text().toLatin1().constData() );
++		const char *filename = misc_model_dialog( m_entry->window(), m_entry->text().toLatin1().constData(),
++		    string_equal( SelectedEntity_getValueForKey( "classname" ), "prop" ) );
+ 
+ 		if ( filename != 0 ) {
+ 			m_entry->setText( filename );
+--- a/radiant/texwindow.cpp
++++ b/radiant/texwindow.cpp
+@@ -465,6 +465,12 @@
+ textureBrowser.m_showShaders, textureBrowser.m_showTextures, textureBrowser.m_hideUnused, textureBrowser.m_hideNonShadersInCommon
+ */
+ bool Texture_IsShown( IShader* shader, const TextureBrowser& textureBrowser ){
++	if ( string_equal( g_pGameDescription->getKeyValue( "basegame" ), "rawfront" )
++	     && ( shader_equal( shader->getName(), "textures/tools/passes_players" )
++	          || shader_equal( shader->getName(), "textures/tools/passes_shots" )
++	          || shader_equal( shader->getName(), "textures/tools/passes_projectiles" ) ) ) {
++		return false;
++	}
+ 	// filter notex / shadernotex images
+ 	if ( g_TextureBrowser_filterNotex && ( string_equal( g_notex.c_str(), shader->getTexture()->name ) || string_equal( g_shadernotex.c_str(), shader->getTexture()->name ) ) ) {
+ 		return false;
