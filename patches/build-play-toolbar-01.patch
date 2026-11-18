@@ -1,0 +1,314 @@
+diff --git a/radiant/mainframe.cpp b/radiant/mainframe.cpp
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -47,6 +47,14 @@
+ #include <QPlainTextEdit>
+ #include <QClipboard>
+ #include <QFileInfo>
++#include <QComboBox>
++#include <QDir>
++#include <QFile>
++#include <QJsonArray>
++#include <QJsonDocument>
++#include <QJsonObject>
++#include <QRegularExpression>
++#include <QSignalBlocker>
+ #include <QProcess>
+ #include <QPointer>
+ #include <QLabel>
+@@ -1464,14 +1472,231 @@
+ extern CopiedString g_toolbarHiddenButtons;
+ 
+ #include <QSvgGenerator>
++namespace {
++
++class BuildMarkerWalker final : public scene::Graph::Walker
++{
++	QStringList& m_names;
++public:
++	explicit BuildMarkerWalker( QStringList& names ) : m_names( names ) {}
++	bool pre( const scene::Path& path, scene::Instance& ) const override {
++		if ( path.size() == 2 ) {
++			if ( const Entity* entity = Node_getEntity( path.top() ) ) {
++				if ( string_equal( entity->getClassName(), "marker" ) ) {
++					m_names.append( QString::fromUtf8( entity->getKeyValue( "name" ) ) );
++				}
++				else if ( string_equal_nocase( entity->getClassName(), "Spawn" )
++				          && string_empty( entity->getKeyValue( "name" ) ) ) {
++					m_names.append( "spawn" ); // the existing Play export converts this helper
++				}
++			}
++		}
++		return path.size() < 2;
++	}
++};
++
++QString buildMapMetadata( const QFileInfo& map ){
++	const QString name = map.completeBaseName();
++	const QString adjacent = map.dir().filePath( name + ".jsonc" );
++	if ( QFileInfo::exists( adjacent ) ) {
++		return adjacent;
++	}
++	const QDir workspace( QCoreApplication::applicationDirPath() + "/rawfront-workspace" );
++	const QString relative = workspace.relativeFilePath( map.absoluteFilePath() );
++	if ( relative.startsWith( "editor/rawfront/maps/" )
++	     || relative == QString( "content/maps/%1/%1.map" ).arg( name ) ) {
++		return workspace.filePath( QString( "stock/maps/%1/%1.jsonc" ).arg( name ) );
++	}
++	return adjacent;
++}
++
++QJsonDocument readBuildMapMetadata( QFile& file ){
++	QString json = QString::fromUtf8( file.readAll() );
++	// Keep quoted tokens intact while removing JSONC comments and trailing commas.
++	static const QRegularExpression comments( R"json(("(?:\\.|[^"\\])*")|//[^\r\n]*|/\*[\s\S]*?\*/)json" );
++	static const QRegularExpression trailingCommas( R"json(("(?:\\.|[^"\\])*")|,(?=\s*[\]}]))json" );
++	json.replace( comments, QStringLiteral( "\\1 " ) );
++	json.replace( trailingCommas, QStringLiteral( "\\1" ) );
++	return QJsonDocument::fromJson( json.toUtf8() );
++}
++
++class BuildPlayToolbar final : public QToolBar
++{
++	QComboBox* m_mode = new QComboBox( this );
++	QComboBox* m_lighting = new QComboBox( this );
++	QPlainTextEdit* m_report;
++	QString m_mapPath;
++	bool m_hasMap = false;
++
++	QString settingsKey() const {
++		QString path = m_mapPath;
++#ifdef WIN32
++		path = path.toCaseFolded();
++#endif
++		return "maps/" + QString::fromLatin1( path.toUtf8().toHex() ) + '/';
++	}
++
++	void persistSelection(){
++		if ( !m_mapPath.isEmpty() ) {
++			QSettings settings( "RawFront", "Radiant Build and Play" );
++			settings.setValue( settingsKey() + "mode", m_mode->currentData() );
++			settings.setValue( settingsKey() + "lighting", m_lighting->currentData() );
++		}
++		validate();
++	}
++
++	void validate(){
++		QStringList report;
++		const QString mode = m_mode->currentData().toString();
++		const QString preset = m_lighting->currentData().toString();
++		QJsonObject metadata;
++		if ( m_hasMap ) {
++			QStringList markers;
++			GlobalSceneGraph().traverse( BuildMarkerWalker( markers ) );
++			auto requireMarker = [&]( const QString& name, bool prefix ){
++				for ( const QString& marker : markers ) {
++					if ( prefix ? marker.startsWith( name ) : marker == name ) {
++						return;
++					}
++				}
++				report.append( "Missing marker: " + name + ( prefix ? "*" : "" ) );
++			};
++			if ( mode == "tdm" ) {
++				requireMarker( "spawn", true );
++			}
++			else {
++				requireMarker( "sd_a", true );
++				requireMarker( "sd_b", true );
++				if ( mode == "sd" ) {
++					requireMarker( "bomb_a", false );
++					requireMarker( "bomb_b", false );
++				}
++				else {
++					requireMarker( "ctf_a", false );
++					requireMarker( "ctf_b", false );
++				}
++			}
++		}
++		if ( m_mapPath.isEmpty() ) {
++			report.append( "Save the map to check its JSONC metadata." );
++		}
++		else {
++			QFile file( buildMapMetadata( QFileInfo( m_mapPath ) ) );
++			bool declared = false;
++			if ( file.open( QIODevice::ReadOnly ) ) {
++				const auto document = readBuildMapMetadata( file );
++				if ( document.isObject() ) {
++					metadata = document.object();
++					declared = metadata.value( "gametypes" ).toArray().contains( QJsonValue( mode ) );
++				}
++				else {
++					report.append( "Invalid map JSONC: " + file.fileName() );
++				}
++			}
++			else {
++				report.append( "Map JSONC unavailable: " + file.fileName() );
++			}
++			if ( !declared ) {
++				report.append( "Missing game mode declaration: " + mode );
++			}
++		}
++		if ( report.isEmpty() ) {
++			report.append( "Build validation passed." );
++		}
++		const QString sky = preset.isEmpty()
++		                    ? metadata.value( "sky" ).toObject().value( "image" ).toString()
++		                    : preset;
++		report.append( "Lighting preset (sky.image): " + ( sky.isEmpty() ? QString( "Map Settings" ) : sky ) );
++		report.append( "Play uses the current TDM pipeline and the map's lighting settings." );
++		m_report->setPlainText( report.join( '\n' ) );
++	}
++
++public:
++	explicit BuildPlayToolbar( QMainWindow* window ) : QToolBar( "Build & Play", window ){
++		setObjectName( "BuildPlay_Toolbar" );
++		setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
++		m_mode->addItem( "Team Deathmatch", "tdm" );
++		m_mode->addItem( "Search & Destroy", "sd" );
++		m_mode->addItem( "Capture the Flag", "ctf" );
++		m_lighting->addItem( "Map Settings", QString() );
++		m_lighting->addItem( "Midday", "skies/midday" );
++		m_lighting->addItem( "Evening", "skies/evening" );
++		auto* quality = new QComboBox( this );
++		quality->addItem( "Engine Default" );
++		quality->setEnabled( false );
++		auto addField = [&]( const char* label, QComboBox* field ){
++			auto* text = new QLabel( label, this );
++			text->setMargin( 4 );
++			field->setAccessibleName( label );
++			addWidget( text );
++			addWidget( field );
++			addSeparator();
++		};
++		addField( "Game Mode", m_mode );
++		addField( "Lighting Preset", m_lighting );
++		addField( "Lighting Quality", quality );
++
++		auto* dock = new QDockWidget( "Build Validation", window );
++		dock->setObjectName( "BuildValidation_Dock" );
++		auto* contents = new QWidget( dock );
++		auto* layout = new QVBoxLayout( contents );
++		m_report = new QPlainTextEdit( contents );
++		m_report->setReadOnly( true );
++		layout->addWidget( m_report );
++		auto* check = new QPushButton( "Validate Map", contents );
++		layout->addWidget( check );
++		dock->setWidget( contents );
++		window->addDockWidget( Qt::BottomDockWidgetArea, dock );
++
++		auto* compile = addAction( "Compile" );
++		QObject::connect( compile, &QAction::triggered, this, [this, dock](){
++			validate();
++			dock->show();
++			m_report->appendPlainText( "Compiler backend unavailable" );
++		} );
++		auto* play = addAction( QString::fromUtf8( "\xE2\x96\xB6 Play" ) );
++		play->setToolTip( "Play using the existing TDM pipeline and the map's lighting settings." );
++		QObject::connect( play, &QAction::triggered, this, &Build_runEnginePlay );
++		QObject::connect( check, &QPushButton::clicked, this, [this](){ validate(); } );
++		QObject::connect( m_mode, qOverload<int>( &QComboBox::currentIndexChanged ), this, [this](){ persistSelection(); } );
++		QObject::connect( m_lighting, qOverload<int>( &QComboBox::currentIndexChanged ), this, [this](){ persistSelection(); } );
++	}
++
++	void refresh( const char* filename ){
++		m_hasMap = true;
++		const QFileInfo file( QString::fromUtf8( filename ) );
++		const QString path = file.isAbsolute() ? QDir::cleanPath( file.absoluteFilePath() ) : QString();
++		if ( path != m_mapPath ) {
++			m_mapPath = path;
++			const QSignalBlocker modeSignals( m_mode );
++			const QSignalBlocker lightingSignals( m_lighting );
++			QSettings settings( "RawFront", "Radiant Build and Play" );
++			m_mode->setCurrentIndex( m_mapPath.isEmpty() ? 0 : qMax( 0, m_mode->findData( settings.value( settingsKey() + "mode" ) ) ) );
++			m_lighting->setCurrentIndex( m_mapPath.isEmpty() ? 0 : qMax( 0, m_lighting->findData( settings.value( settingsKey() + "lighting" ) ) ) );
++		}
++		else if ( path.isEmpty() ) {
++			const QSignalBlocker modeSignals( m_mode );
++			const QSignalBlocker lightingSignals( m_lighting );
++			m_mode->setCurrentIndex( 0 );
++			m_lighting->setCurrentIndex( 0 );
++		}
++		validate();
++	}
++};
++
++QPointer<BuildPlayToolbar> g_buildPlayToolbar;
++
++} // namespace
++
++void BuildPlay_refresh( const char* filename ){
++	if ( g_buildPlayToolbar ) {
++		g_buildPlayToolbar->refresh( filename );
++	}
++}
++
+ void create_main_toolbar( QToolBar *toolbar,  MainFrame::EViewStyle style ){
+ 	QSvgGenerator dummy; // reference symbol, so that Qt5Svg.dll required dependency is explicit, also install-dlls-msys2-mingw.sh will find it
+ 
+-	if ( string_equal( g_pGameDescription->mGameFile.c_str(), "engine.game" ) ) {
+-		auto* play = toolbar->addAction( toolbar->style()->standardIcon( QStyle::SP_MediaPlay ), "Play" );
+-		play->setToolTip( QString::fromUtf8( "Play \xE2\x80\x94 uruchom aktualn\xC4\x85 map\xC4\x99 w Engine" ) );
+-		QObject::connect( play, &QAction::triggered, toolbar, &Build_runEnginePlay );
+-	}
+ 
+  	File_constructToolbar( toolbar );
+ 	toolbar_append_separator( toolbar );
+@@ -1761,6 +1986,12 @@
+ 			window->addToolBar( Qt::ToolBarArea::RightToolBarArea, toolbar );
+ 			create_plugin_toolbar( toolbar );
+ 		}
++	}
++
++	if ( string_equal( g_pGameDescription->mGameFile.c_str(), "engine.game" ) ) {
++		window->addToolBarBreak( Qt::TopToolBarArea );
++		g_buildPlayToolbar = new BuildPlayToolbar( window );
++		window->addToolBar( Qt::TopToolBarArea, g_buildPlayToolbar.data() );
+ 	}
+ 
+ 	create_main_statusbar( window->statusBar(), m_statusLabel );
+diff --git a/radiant/mainframe.h b/radiant/mainframe.h
+--- a/radiant/mainframe.h
++++ b/radiant/mainframe.h
+@@ -138,6 +138,7 @@
+ 
+ QWidget* MainFrame_getWindow();
+ void MissingAssets_refresh( const char* mapPath );
++void BuildPlay_refresh( const char* filename );
+ 
+ 
+ template<typename Value>
+diff --git a/radiant/map.cpp b/radiant/map.cpp
+--- a/radiant/map.cpp
++++ b/radiant/map.cpp
+@@ -1035,6 +1035,7 @@
+ 
+ 	GridStatus_changed();
+ 	MissingAssets_refresh( filename );
++	BuildPlay_refresh( filename );
+ }
+ 
+ class Excluder
+@@ -1241,6 +1242,7 @@
+ 	Map_UpdateTitle( g_map );
+ 
+ 	g_map.m_resource->attach( g_map );
++	BuildPlay_refresh( Map_Name( g_map ) );
+ }
+ 
+ void Map_Rename( const char* filename ){
+@@ -1265,6 +1267,7 @@
+ 	const bool saved = References_Saved();
+ 	if ( saved ) {
+ 		MissingAssets_refresh( Map_Name( g_map ) );
++		BuildPlay_refresh( Map_Name( g_map ) );
+ 	}
+ 	return saved;
+ }
+@@ -1295,6 +1298,7 @@
+ 
+ 	GridStatus_changed();
+ 	MissingAssets_refresh( "" );
++	BuildPlay_refresh( "" );
+ }
+ 
+ /*

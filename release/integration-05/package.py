@@ -6,7 +6,7 @@ import struct
 
 work = Path(__file__).resolve().parent
 root = work.parents[1]
-name = "RawFront-Radiant-0.5.4-win64"
+name = "RawFront-Radiant-0.6.1-win64"
 parser = argparse.ArgumentParser()
 parser.add_argument("base_zip", type=Path)
 parser.add_argument("output", type=Path)
