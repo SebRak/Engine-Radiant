@@ -35,7 +35,10 @@ $source = [IO.File]::ReadAllText($file.FullName)
 $mapText = [regex]::Replace($source,'(?m)^\s*//[^\r\n]*','')
 $face = '(?m)^[ \t]*\(\s*-?[\d.]+[^\r\n]*?\)[ \t]+(?:"(?<shader>[^"\r\n]+)"|(?<shader>[\w./-]+))[ \t]+-?[\d.]'
 foreach ($match in [regex]::Matches($mapText,$face)) {
-    $asset = $match.Groups['shader'].Value -replace '^textures/',''
+    $shader = $match.Groups['shader'].Value
+    # The MAP face writer emits the exact token NULL for the editor's empty shader.
+    if ($shader -ceq 'NULL') { continue }
+    $asset = $shader -replace '^textures/',''
     $kind = if ($asset.StartsWith('tools/')) { 'Tool' } else { 'Material' }
     Add-Reference $kind $asset
 }

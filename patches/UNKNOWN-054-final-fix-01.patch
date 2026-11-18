@@ -1,0 +1,37 @@
+diff --git a/plugins/shaders/shaders.cpp b/plugins/shaders/shaders.cpp
+--- a/plugins/shaders/shaders.cpp
++++ b/plugins/shaders/shaders.cpp
+@@ -851,11 +851,12 @@
+ public:
+ 	static bool m_lightingEnabled;
+ 
+-	CShader( const ShaderDefinition& definition ) :
++	CShader( const ShaderDefinition& definition, const char* name ) :
+ 		m_refcount( 0 ),
+ 		m_template( *definition.shaderTemplate ),
+ 		m_args( definition.args ),
+ 		m_filename( definition.filename ),
++		m_Name( name ),
+ 		m_blendFunc( BLEND_SRC_ALPHA, BLEND_ONE_MINUS_SRC_ALPHA ),
+ 		m_bInUse( false ){
+ 		m_pTexture = 0;
+@@ -1048,9 +1049,5 @@
+ 	}
+ 
+-// set shader name
+-	void setName( const char* name ){
+-		m_Name = name;
+-	}
+ 
+ 	class MapLayer final : public ShaderLayer
+ 	{
+@@ -1511,8 +1508,7 @@
+ 	}
+ 
+ 	// create shader from existing definition
+-	ShaderPointer pShader( new CShader( ( *i ).second ) );
+-	pShader->setName( name );
++	ShaderPointer pShader( new CShader( ( *i ).second, name ) );
+ 	g_ActiveShaders.insert( shaders_t::value_type( name, pShader ) );
+ 	g_ActiveShadersChangedNotify();
+ 	return pShader;
