@@ -1,0 +1,27 @@
+diff --git a/radiant/main.cpp b/radiant/main.cpp
+--- a/radiant/main.cpp
++++ b/radiant/main.cpp
+@@ -414,7 +414,7 @@
+ 	qInstallMessageHandler( qute_messageHandler );
+ 	QCoreApplication::setOrganizationName( "QtRadiant" );
+ 	QCoreApplication::setApplicationName( "RawFront Radiant" );
+-	QGuiApplication::setApplicationDisplayName( "RawFront Radiant" );
++	// Let Qt use the application name without appending a caption suffix.
+ 	QCoreApplication::setApplicationVersion( QT_VERSION_STR );
+ 
+ 	GlobalDebugMessageHandler::instance().setHandler( GlobalPopupDebugMessageHandler::instance() );
+diff --git a/radiant/qe3.cpp b/radiant/qe3.cpp
+--- a/radiant/qe3.cpp
++++ b/radiant/qe3.cpp
+@@ -278,7 +278,10 @@
+ // Sys_ functions
+ 
+ void Sys_SetTitle( const char *text, bool modified ){
+-	auto title = StringStream( "RawFront Radiant — ", path_get_filename_start( text ) );
++	auto title = StringStream( "RawFront Radiant" );
++	if ( !string_empty( text ) && !string_equal( text, "unnamed.map" ) ) {
++		title << " - " << path_get_filename_start( text );
++	}
+ 
+ 	if ( modified ) {
+ 		title << " *";

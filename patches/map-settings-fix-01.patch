@@ -1,0 +1,81 @@
+diff --git a/radiant/mainframe.cpp b/radiant/mainframe.cpp
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -48,6 +48,7 @@
+ #include <QClipboard>
+ #include <QFileInfo>
+ #include <QComboBox>
++#include <QCryptographicHash>
+ #include <QDir>
+ #include <QFile>
+ #include <QJsonArray>
+@@ -1528,12 +1529,42 @@
+ 	QString m_mapPath;
+ 	bool m_hasMap = false;
+ 
++	QByteArray settingsPathBytes() const {
++#ifdef WIN32
++		return m_mapPath.toCaseFolded().toUtf8();
++#else
++		return m_mapPath.toUtf8();
++#endif
++	}
++
+ 	QString settingsKey() const {
+-		QString path = m_mapPath;
++		const auto hash = QCryptographicHash::hash( settingsPathBytes(), QCryptographicHash::Sha256 );
++		return "maps-sha256/" + QString::fromLatin1( hash.toHex() ) + '/';
++	}
++
++	void restoreSelection(){
++		QSettings settings( "RawFront", "Radiant Build and Play" );
++		const QString key = settingsKey();
++		const QString legacyKey = "maps/" + QString::fromLatin1( settingsPathBytes().toHex() ) + '/';
++		auto restore = [&]( const char* field, QComboBox* combo ){
++			const QString target = key + field;
++			QVariant value = settings.value( target );
++			if ( !value.isValid() ) {
+ #ifdef WIN32
+-		path = path.toCaseFolded();
++				// Skip registry key names that the legacy format could never have created.
++				if ( legacyKey.size() - 6 <= 255 )
+ #endif
+-		return "maps/" + QString::fromLatin1( path.toUtf8().toHex() ) + '/';
++				{
++					value = settings.value( legacyKey + field );
++					if ( value.isValid() && combo->findData( value ) >= 0 ) {
++						settings.setValue( target, value );
++					}
++				}
++			}
++			combo->setCurrentIndex( qMax( 0, combo->findData( value ) ) );
++		};
++		restore( "mode", m_mode );
++		restore( "lighting", m_lighting );
+ 	}
+ 
+ 	void persistSelection(){
+@@ -1664,17 +1695,17 @@
+ 
+ 	void refresh( const char* filename ){
+ 		m_hasMap = true;
+-		const QFileInfo file( QString::fromUtf8( filename ) );
++		const QFileInfo file( QDir::fromNativeSeparators( QString::fromUtf8( filename ) ) );
+ 		const QString path = file.isAbsolute() ? QDir::cleanPath( file.absoluteFilePath() ) : QString();
+ 		if ( path != m_mapPath ) {
+ 			m_mapPath = path;
+ 			const QSignalBlocker modeSignals( m_mode );
+ 			const QSignalBlocker lightingSignals( m_lighting );
+-			QSettings settings( "RawFront", "Radiant Build and Play" );
+-			m_mode->setCurrentIndex( m_mapPath.isEmpty() ? 0 : qMax( 0, m_mode->findData( settings.value( settingsKey() + "mode" ) ) ) );
+-			m_lighting->setCurrentIndex( m_mapPath.isEmpty() ? 0 : qMax( 0, m_lighting->findData( settings.value( settingsKey() + "lighting" ) ) ) );
+-		}
+-		else if ( path.isEmpty() ) {
++			if ( !m_mapPath.isEmpty() ) {
++				restoreSelection();
++			}
++		}
++		if ( path.isEmpty() ) {
+ 			const QSignalBlocker modeSignals( m_mode );
+ 			const QSignalBlocker lightingSignals( m_lighting );
+ 			m_mode->setCurrentIndex( 0 );

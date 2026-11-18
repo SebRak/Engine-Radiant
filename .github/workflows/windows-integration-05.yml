@@ -210,6 +210,14 @@ jobs:
           printf '%s  %s\n' d02e49a6431adcf6460db4e562a2156ff54b3f55a2ad147473436c73557deaf7 "$patch" | sha256sum -c -
           git -c core.autocrlf=false apply --check --whitespace=error "$patch"
           git -c core.autocrlf=false apply --whitespace=error "$patch"
+          patch=../integration/patches/map-settings-fix-01.patch
+          printf '%s  %s\n' 95981c4db62c34565e705b3754f3fb3b0073dd0371c5811b69b73d4a6e429287 "$patch" | sha256sum -c -
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
+          patch=../integration/patches/window-title-fix-01.patch
+          printf '%s  %s\n' d9e9bd8a2be6f9dc06cc5edaa5a33066d070290b676672bbf28f4967d2d96d10 "$patch" | sha256sum -c -
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
           git diff --check HEAD
           git diff --binary HEAD > ../dist/integration-05-applied.patch
 
