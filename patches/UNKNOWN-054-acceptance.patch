@@ -1,0 +1,33 @@
+diff --git a/radiant/referencecache.cpp b/radiant/referencecache.cpp
+--- a/radiant/referencecache.cpp
++++ b/radiant/referencecache.cpp
+@@ -365,6 +365,13 @@
+ 	}
+ 
+ 	void loadCached(){
++		if ( extension_equal( m_type.c_str(), "map" )
++		     && !path_is_absolute( m_originalName.c_str() )
++		     && !string_equal( m_originalName.c_str(), "unnamed.map" )
++		     && !file_readable( StringStream( m_path, m_name ) ) ) {
++			clearModel();
++			return;
++		}
+ 		if ( g_modelCache_enabled ) {
+ 			// cache lookup
+ 			ModelCache::iterator i = ModelCache_find( m_path.c_str(), m_name.c_str() );
+diff --git a/radiant/map.cpp b/radiant/map.cpp
+--- a/radiant/map.cpp
++++ b/radiant/map.cpp
+@@ -1262,7 +1262,11 @@
+ 
+ 	ScopeTimer timer( "map save" );
+ 	SaveReferences();
+-	return References_Saved();
++	const bool saved = References_Saved();
++	if ( saved ) {
++		MissingAssets_refresh( Map_Name( g_map ) );
++	}
++	return saved;
+ }
+ 
+ /*

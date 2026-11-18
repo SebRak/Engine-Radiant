@@ -1,4 +1,4 @@
-name: Windows x64 RawFront Radiant 0.5 Integration 01
+name: Windows x64 RawFront Radiant 0.5.4 Native Build 01
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 45
     env:
       UPSTREAM_SHA: 68ecbed64b7be78741878c730279b5471d978c7c
-      PACKAGE: RawFront-Radiant-0.5-integration-01-binaries.zip
+      PACKAGE: RawFront-Radiant-0.5.4-native-01-binaries.zip
 
     defaults:
       run:
@@ -182,7 +182,7 @@ jobs:
           } > icons/radiant.rc
           git diff --binary HEAD > ../dist/preview-01-rc01-applied.patch
 
-      - name: Apply Integration 05 and CoD2 Import 01
+      - name: Apply Integration 05, CoD2 Import 01 and UNKNOWN 0.5.4
         working-directory: upstream
         run: |
           set -euo pipefail
@@ -194,10 +194,18 @@ jobs:
           printf '%s  %s\n' cd7d4b18a4686d293936159cbf2ebcb3a4e79f4fd962c2914a518faa1f7cfef9 "$patch" | sha256sum -c -
           git -c core.autocrlf=false apply --check --whitespace=error "$patch"
           git -c core.autocrlf=false apply --whitespace=error "$patch"
+          patch=../integration/patches/UNKNOWN-054-native.patch
+          printf '%s  %s\n' 130c01cb0b6a7eb8037fb05ce89705b15e8922f5acc6ea82efd1e7237113c4fa "$patch" | sha256sum -c -
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
+          patch=../integration/patches/UNKNOWN-054-acceptance.patch
+          printf '%s  %s\n' 2a9a7d3c63466a9230dd03d4e7517e75f50cd4f207110c1cd2df90cdc8ac58bf "$patch" | sha256sum -c -
+          git -c core.autocrlf=false apply --check --whitespace=error "$patch"
+          git -c core.autocrlf=false apply --whitespace=error "$patch"
           git diff --check HEAD
           git diff --binary HEAD > ../dist/integration-05-applied.patch
 
-      - name: Build RawFront Radiant 0.5
+      - name: Build RawFront Radiant 0.5.4
         working-directory: upstream
         run: |
           set -euo pipefail
@@ -218,7 +226,7 @@ jobs:
           cp LICENSE GPL LGPL install/licenses/
           printf '%s\n' "NetRadiant-Custom $UPSTREAM_SHA" \
             "https://github.com/Garux/netradiant-custom/tree/$UPSTREAM_SHA" \
-            "Windows x64 / MSYS2 MINGW64 / Release / Navigation 01 + Play 02 + Unified Asset Browser 02 + Surface Properties 01 + Surface Inspector Fix 02 + Context Menu 01 + Preview 0.1 RC01 + Native Integration 05 + CoD2 Import 01" > install/BUILD-INFO.txt
+            "Windows x64 / MSYS2 MINGW64 / Release / Navigation 01 + Play 02 + Unified Asset Browser 02 + Surface Properties 01 + Surface Inspector Fix 02 + Context Menu 01 + Preview 0.1 RC01 + Native Integration 05 + CoD2 Import 01 + UNKNOWN 0.5.4" > install/BUILD-INFO.txt
           cp ../dist/packages.txt install/
           rm -f install/bitmaps/MyriadPro-Regular.ttf install/bitmaps/splash.svg
           for f in radiant.exe q3map2.exe q2map.exe qdata3.exe h2data.exe mbspc.exe \
@@ -238,22 +246,22 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Assemble portable 0.5 package
+      - name: Assemble portable 0.5.4 package
         shell: pwsh
         run: |
           $kit = 'integration/release/integration-05'
           $base = "dist/$env:PACKAGE"
           $digest = ((Get-Content "$base.sha256") -split '\s+')[0]
-          python "$kit/package.py" $base dist/RawFront-Radiant-0.5-win64.zip --base-sha256 $digest --cod2-import-dir $kit
+          python "$kit/package.py" $base dist/RawFront-Radiant-0.5.4-win64.zip --base-sha256 $digest --cod2-import-dir $kit
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
-      - name: Upload Integration 01
+      - name: Upload Native Build 01
         uses: actions/upload-artifact@v4
         with:
-          name: RawFront-Radiant-0.5-integration-01-win64
+          name: RawFront-Radiant-0.5.4-native-01-win64
           path: |
-            dist/RawFront-Radiant-0.5-win64.zip
-            dist/RawFront-Radiant-0.5-win64.zip.sha256
+            dist/RawFront-Radiant-0.5.4-win64.zip
+            dist/RawFront-Radiant-0.5.4-win64.zip.sha256
             dist/radiant.exe.sha256
             dist/integration-05-applied.patch
             dist/build.log

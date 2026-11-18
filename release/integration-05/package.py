@@ -6,7 +6,7 @@ import struct
 
 work = Path(__file__).resolve().parent
 root = work.parents[1]
-name = "RawFront-Radiant-0.5-win64"
+name = "RawFront-Radiant-0.5.4-win64"
 parser = argparse.ArgumentParser()
 parser.add_argument("base_zip", type=Path)
 parser.add_argument("output", type=Path)
@@ -16,6 +16,7 @@ args = parser.parse_args()
 if sha256(args.base_zip.read_bytes()).hexdigest() != args.base_sha256.lower():
     parser.error("Input archive SHA-256 does not match the build manifest")
 files = {
+    "Check_Map_Assets.ps1": "unknown-054/Check_Map_Assets.ps1",
     "README-PL.txt": "README-PL.txt",
     "Start_RawFront_Radiant.cmd": "Start_RawFront_Radiant.cmd",
     "Start_RawFront_Radiant.ps1": "Start_RawFront_Radiant.ps1",
@@ -24,6 +25,9 @@ files = {
     "Support/radiant_extensions.ent": "radiant_extensions.ent",
     "Support/Prepare_Gameplay_Textures.ps1": "Prepare_Gameplay_Textures.ps1",
 }
+
+for filename in ("notex.png", "shadernotex.png", "nomodel.png", "unknowntool.png"):
+    files[f"bitmaps/{filename}"] = f"unknown-054/{filename}"
 
 for filename in ("Import_CoD2_Map.cmd", "Import_CoD2_Map.ps1",
                  "import_cod2_map.py", "cod2-compatibility.json"):
@@ -35,10 +39,13 @@ for filename in ("Import_CoD2_Map.cmd", "Import_CoD2_Map.ps1",
 args.output.parent.mkdir(exist_ok=True, parents=True)
 with ZipFile(args.base_zip) as source, ZipFile(args.output, "x", ZIP_DEFLATED) as output:
     assert source.testzip() is None
+    replacements = {destination.lower() for destination in files}
     for item in source.infolist():
         path = PurePosixPath(item.filename)
         assert not path.is_absolute() and ".." not in path.parts
         if item.is_dir() or path.parts[0] in ("gamepacks", "settings"):
+            continue
+        if path.as_posix().lower() in replacements:
             continue
         if path.suffix.lower() in (".map", ".ttf", ".log", ".pref", ".pid", ".bak"):
             continue

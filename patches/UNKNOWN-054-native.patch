@@ -1,0 +1,173 @@
+--- a/radiant/mainframe.h
++++ b/radiant/mainframe.h
+@@ -137,6 +137,7 @@
+ extern MainFrame* g_pParentWnd;
+ 
+ QWidget* MainFrame_getWindow();
++void MissingAssets_refresh( const char* mapPath );
+ 
+ 
+ template<typename Value>
+--- a/radiant/mainframe.cpp
++++ b/radiant/mainframe.cpp
+@@ -43,6 +43,12 @@
+ #include <QWidget>
+ #include <QCoreApplication>
+ #include <QMainWindow>
++#include <QDockWidget>
++#include <QPlainTextEdit>
++#include <QClipboard>
++#include <QFileInfo>
++#include <QProcess>
++#include <QPointer>
+ #include <QLabel>
+ #include <QSplitter>
+ #include <QMenuBar>
+@@ -114,6 +120,73 @@
+ #include "feedback.h"
+ #include "referencecache.h"
+ 
++void MissingAssets_refresh( const char* mapPath ){
++#ifdef WIN32
++    static QPointer<QDockWidget> dock;
++    static QPointer<QPlainTextEdit> report;
++    static QPointer<QProcess> scan;
++    auto* window = qobject_cast<QMainWindow*>( MainFrame_getWindow() );
++    if ( !window )
++        return;
++    const QString script = QCoreApplication::applicationDirPath() + "/Check_Map_Assets.ps1";
++    if ( !QFileInfo::exists( script ) )
++        return;
++    if ( scan ) {
++        scan->disconnect();
++        scan->kill();
++        scan->deleteLater();
++        scan.clear();
++    }
++    const QFileInfo map( QString::fromUtf8( mapPath ) );
++    if ( !map.isAbsolute() || !map.isFile() ) {
++        if ( report )
++            report->clear();
++        if ( dock )
++            dock->hide();
++        return;
++    }
++    if ( !dock ) {
++        dock = new QDockWidget( "Missing Assets", window );
++        dock->setObjectName( "RawFrontMissingAssets" );
++        auto* contents = new QWidget( dock );
++        auto* layout = new QVBoxLayout( contents );
++        report = new QPlainTextEdit( contents );
++        report->setReadOnly( true );
++        layout->addWidget( report );
++        auto* copy = new QPushButton( "Copy Report", contents );
++        layout->addWidget( copy );
++        QObject::connect( copy, &QPushButton::clicked, report.data(), [] {
++            if ( report )
++                QApplication::clipboard()->setText( report->toPlainText() );
++        } );
++        dock->setWidget( contents );
++        window->addDockWidget( Qt::BottomDockWidgetArea, dock );
++        dock->hide();
++    }
++    auto* process = new QProcess( dock );
++    scan = process;
++    QObject::connect( process, qOverload<int, QProcess::ExitStatus>( &QProcess::finished ),
++                      dock.data(), [process]( int code, QProcess::ExitStatus ) {
++        const QString text = QString::fromLocal8Bit( process->readAllStandardOutput() ).trimmed();
++        report->setPlainText( code == 0 ? text : QString::fromLocal8Bit( process->readAllStandardError() ) );
++        dock->setVisible( code != 0 || !text.startsWith( "Missing Assets: 0" ) || text.count( '\n' ) > 1 );
++        process->deleteLater();
++    } );
++    QObject::connect( process, &QProcess::errorOccurred, dock.data(), [process]( QProcess::ProcessError error ){
++        if ( error == QProcess::FailedToStart ) {
++            report->setPlainText( process->errorString() );
++            dock->show();
++            process->deleteLater();
++        }
++    } );
++    process->start( "powershell.exe", { "-NoProfile", "-NonInteractive", "-File", script,
++                                        "-Map", map.absoluteFilePath() } );
++#else
++    (void)mapPath;
++#endif
++}
++
++
+ #include "colors.h"
+ #include "tools.h"
+ #include "filterbar.h"
+--- a/radiant/map.cpp
++++ b/radiant/map.cpp
+@@ -1025,6 +1025,7 @@
+ 	g_currentMap = &g_map;
+ 
+ 	GridStatus_changed();
++	MissingAssets_refresh( filename );
+ }
+ 
+ class Excluder
+@@ -1280,6 +1281,7 @@
+ 	g_currentMap = &g_map;
+ 
+ 	GridStatus_changed();
++	MissingAssets_refresh( "" );
+ }
+ 
+ /*
+--- a/radiant/referencecache.cpp
++++ b/radiant/referencecache.cpp
+@@ -42,6 +42,8 @@
+ #include "os/path.h"
+ #include "stream/textfilestream.h"
+ #include "nullmodel.h"
++#include "map.h"
++#include "mainframe.h"
+ #include "maplib.h"
+ #include "stream/stringstream.h"
+ #include "os/file.h"
+@@ -656,6 +658,7 @@
+ void RefreshReferences(){
+ 	ScopeDisableScreenUpdates disableScreenUpdates( "Processing...", "Refreshing Models" );
+ 	g_referenceCache.refresh();
++	MissingAssets_refresh( Map_Name( g_map ) );
+ }
+ 
+ 
+--- a/radiant/texwindow.cpp
++++ b/radiant/texwindow.cpp
+@@ -83,6 +83,7 @@
+ #include "gtkdlgs.h"
+ #include "gtkmisc.h"
+ #include "mainframe.h"
++#include "map.h"
+ #include "findtexturedialog.h"
+ #include "groupdialog.h"
+ #include "preferences.h"
+@@ -1970,6 +1971,7 @@
+ 	if( g_TexBro.m_assetPages && g_TexBro.m_assetPages->currentIndex() == 1 )
+ 		TextureBrowser_showModels();
+ 	UpdateAllWindows();
++	MissingAssets_refresh( Map_Name( g_map ) );
+ }
+ 
+ void TextureBrowser_ToggleShowShaders(){
+--- a/plugins/shaders/shaders.cpp
++++ b/plugins/shaders/shaders.cpp
+@@ -37,6 +37,7 @@
+ #include "shaders.h"
+ 
+ #include <cstdio>
++#include <cstring>
+ #include <cstdlib>
+ #include <map>
+ #include <list>
+@@ -957,6 +958,8 @@
+ 
+ 			const auto name = StringStream( GlobalRadiant().getAppPath(), "bitmaps/",
+ 				( string_equal( m_template.getName(), "nomodel" )? "nomodel.png"
++				: ( std::strncmp( getName(), "textures/tools/", 15 ) == 0 || std::strncmp( getName(), "tools/", 6 ) == 0 )
++				  ? "unknowntool.png"
+ 				: IsDefault() ? "notex.png"
+ 				: "shadernotex.png" ) );
+ 			m_pTexture = GlobalTexturesCache().capture( LoadImageCallback( 0, loadBitmap ), name );

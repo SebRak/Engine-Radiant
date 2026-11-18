@@ -8,3 +8,6 @@
 /patches/preview-01-rc01.patch text eol=lf
 /patches/native-integration-05.patch text eol=lf
 /patches/cod2-import-01.patch text eol=lf
+
+/patches/UNKNOWN-054-native.patch text eol=lf
+/patches/UNKNOWN-054-acceptance.patch text eol=lf
